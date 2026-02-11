@@ -2298,10 +2298,12 @@ const variants = [
 ];
 
 // ── Write Output ────────────────────────────────────────────
+const themesDir = path.join(__dirname, 'themes');
+if (!fs.existsSync(themesDir)) fs.mkdirSync(themesDir);
 console.log('INTERFACE ONLINE');
 for (const variant of variants) {
   const theme = buildTheme(variant.name, variant.palette);
-  const outputPath = path.join(__dirname, 'themes', variant.file);
+  const outputPath = path.join(themesDir, variant.file);
   fs.writeFileSync(outputPath, JSON.stringify(theme, null, '\t'));
   console.log('GENERATED:', variant.name, '->', outputPath);
 }
