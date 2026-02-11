@@ -8,13 +8,7 @@
     "url": "https://github.com/nathanmillwater/vsce-XX121"
   },
   "scripts": {
-    "build:theme": "node build-theme.js",
-    "preversion": "node build-theme.js",
-    "version": "git add themes/XX121-color-theme.json themes/XX121-yellow-color-theme.json",
-    "postversion": "git push --follow-tags",
-    "release": "npm version patch",
-    "release:minor": "npm version minor",
-    "release:major": "npm version major"
+    "build": "node build-theme.js"
   },
   "engines": {
     "vscode": "^1.109.0"
