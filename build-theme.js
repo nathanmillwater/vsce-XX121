@@ -537,8 +537,8 @@ return {
     'debugConsole.infoForeground':       palette.primary,
     'debugConsole.warningForeground':    palette.secondary,
     'debugConsole.errorForeground':      palette.red,
-    'debugExceptionWidget.background':   palette.bgLight,
-    'debugExceptionWidget.border':       palette.border,
+    'debugExceptionWidget.background':   alpha(palette.redDim, '40'),
+    'debugExceptionWidget.border':       palette.red,
 
     // ── Testing ────────────────────────────────────────────
     'testing.iconPassed':  palette.primaryBright,
