@@ -98,15 +98,15 @@ const palettes = {
 function buildTheme(name, palette) {
 
 const tokens = {
-  comment:    palette.red,
+  comment:    palette.primaryDim,
   variable:   palette.primaryBright,
   keyword:    palette.primary,
   operator:   palette.primary,
   function:   palette.secondary,
-  string:     palette.primaryBright,
+  string:     palette.green,
   number:     palette.secondary,
   class:      palette.secondaryBright,
-  type:       palette.primaryMid,
+  type:       palette.cyan,
   tag:        palette.primaryBright,
   attribute:  palette.primaryBright,
   regex:      palette.secondary,
@@ -147,7 +147,7 @@ return {
     'editorCursor.foreground':               palette.redBright,
     'editorCursor.background':               palette.bg,
 
-    'editor.selectionBackground':            palette.redDim,
+    'editor.selectionBackground':            alpha(palette.primary, '40'),
     'editor.selectionForeground':            palette.primaryWhite,
     'editor.inactiveSelectionBackground':    alpha(palette.primary, '20'),
     'editor.selectionHighlightBackground':   alpha(palette.primary, '26'),
@@ -167,7 +167,7 @@ return {
     'editor.wordHighlightBackground':        alpha(palette.primary, '20'),
     'editor.wordHighlightStrongBackground':  alpha(palette.primary, '30'),
 
-    'editor.lineHighlightBackground':        alpha(palette.red, '30'),
+    'editor.lineHighlightBackground':        alpha(palette.primaryDim, '18'),
     'editor.lineHighlightBorder':            palette.bgLighter,
 
     'editorLink.activeForeground':           palette.primaryBright,
@@ -180,8 +180,8 @@ return {
 
     'editorRuler.foreground':                palette.border,
 
-    'editorBracketMatch.background':         alpha(palette.red, '30'),
-    'editorBracketMatch.border':             palette.redBright,
+    'editorBracketMatch.background':         alpha(palette.secondary, '30'),
+    'editorBracketMatch.border':             palette.secondaryBright,
 
     'editor.foldBackground':                 alpha(palette.primary, '15'),
 
@@ -274,7 +274,7 @@ return {
 
     // ── Sidebar ────────────────────────────────────────────
     'sideBar.background':                  palette.bg,
-    'sideBar.foreground':                  palette.white,
+    'sideBar.foreground':                  palette.primaryBright,
     'sideBar.border':                      palette.primaryMid,
     'sideBar.dropBackground':              alpha(palette.primary, '30'),
     'sideBarTitle.foreground':             palette.white,
@@ -286,7 +286,7 @@ return {
     'activityBar.background':          palette.primaryDim,
     'activityBar.foreground':          palette.white,
     'activityBar.activeBorder':       palette.red,
-    'activityBar.inactiveForeground':  palette.black,
+    'activityBar.inactiveForeground':  alpha(palette.primaryWhite, '60'),
     'activityBar.activeBackground':  palette.secondary,
     'activityBar.border':              palette.black,
     'activityBarBadge.background':     palette.redDim,
@@ -407,7 +407,7 @@ return {
     'list.activeSelectionForeground':   palette.secondaryBright,
     'list.focusBackground':             alpha(palette.secondary, '30'),
     'list.focusForeground':             palette.secondaryBright,
-    'list.hoverBackground':             palette.redDim,
+    'list.hoverBackground':             alpha(palette.primary, '25'),
     'list.hoverForeground':             palette.secondaryBright,
     'list.inactiveSelectionBackground': palette.bgLighter,
     'list.inactiveSelectionForeground': palette.primary,
@@ -556,7 +556,7 @@ return {
     {
       name: 'Comments',
       scope: ['comment', 'punctuation.definition.comment', 'string.quoted.docstring', 'string.quoted.docstring punctuation.definition.string.begin', 'string.quoted.docstring punctuation.definition.string.end'],
-      settings: { foreground: tokens.comment, fontStyle: 'bold' },
+      settings: { foreground: tokens.comment },
     },
     {
       name: 'Comment Markup Link',
@@ -591,12 +591,12 @@ return {
     {
       name: 'Language Variables',
       scope: ['variable.language'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Namespaces',
       scope: ['entity.name.namespace'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Functions',
@@ -606,22 +606,22 @@ return {
         'support.function.any-method',
         'variable.function',
       ],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Methods',
       scope: ['keyword.other.special-method'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Support Function',
       scope: ['support.function'],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'Classes',
       scope: ['support.class', 'entity.name.type.class'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Class Name',
@@ -630,22 +630,22 @@ return {
         'variable.other.class.js',
         'variable.other.class.ts',
       ],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Class Name (namespace type)',
       scope: ['entity.name.type.namespace'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Class Name (identifier)',
       scope: ['entity.name.class.identifier.namespace.type'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Type Name',
       scope: ['entity.name.type'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Strings',
@@ -660,12 +660,12 @@ return {
     {
       name: 'Integers',
       scope: ['constant.numeric'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
+      settings: { foreground: tokens.number },
     },
     {
       name: 'Constants',
       scope: ['constant'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
+      settings: { foreground: tokens.number },
     },
     {
       name: 'Punctuation Definition Constant',
@@ -675,22 +675,22 @@ return {
     {
       name: 'Tags',
       scope: ['entity.name.tag'],
-      settings: { foreground: tokens.tag, fontStyle: 'bold' },
+      settings: { foreground: tokens.tag },
     },
     {
       name: 'Attributes',
       scope: ['entity.other.attribute-name'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
+      settings: { foreground: tokens.number },
     },
     {
       name: 'Attribute IDs',
       scope: ['entity.other.attribute-name.id'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Attribute Class',
       scope: ['entity.other.attribute-name.class.css'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
+      settings: { foreground: tokens.number },
     },
     {
       name: 'Selector',
@@ -700,12 +700,12 @@ return {
     {
       name: 'Inherited Class',
       scope: ['entity.other.inherited-class'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Constant Other Symbol',
       scope: ['constant.other.symbol'],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'Text (function parameter)',
@@ -740,7 +740,7 @@ return {
     {
       name: 'Headings (punctuation / section)',
       scope: ['markup.heading punctuation.definition.heading', 'entity.name.section'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Units',
@@ -785,12 +785,12 @@ return {
     {
       name: 'Regular Expressions',
       scope: ['string.regexp'],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'Escape Characters',
       scope: ['constant.character.escape'],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'URL',
@@ -849,7 +849,7 @@ return {
         'punctuation.definition.from-file.diff',
         'punctuation.definition.to-file.diff',
       ],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Diff Inserted',
@@ -928,7 +928,7 @@ return {
     {
       name: 'Control Elements',
       scope: ['control.elements', 'keyword.operator.less'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
+      settings: { foreground: tokens.number },
     },
 
     // ════════════════════════════════════════════════════════
@@ -1032,7 +1032,7 @@ return {
     {
       name: 'js Console Function',
       scope: ['entity.name.function', 'support.function.console'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'js/ts Keyword Operators (delete, in, of, instanceof, new, typeof, void)',
@@ -1073,7 +1073,7 @@ return {
     {
       name: 'js Flow Primitive',
       scope: ['support.type.primitive'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'js Class Prop',
@@ -1114,7 +1114,7 @@ return {
         'entity.other.attribute-name.tsx',
         'variable.language.super',
       ],
-      settings: { fontStyle: 'bold' },
+      settings: { },
     },
     {
       name: 'Parameter Function js/ts',
@@ -1144,7 +1144,7 @@ return {
         'support.type.primitive.tsx',
         'support.type.builtin.tsx',
       ],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
 
     // ════════════════════════════════════════════════════════
@@ -1153,7 +1153,7 @@ return {
     {
       name: 'Java Type',
       scope: ['storage.type.annotation.java', 'storage.type.object.array.java'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Java Source',
@@ -1190,12 +1190,12 @@ return {
     {
       name: 'Java Method',
       scope: ['meta.method.java'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Java Storage Modifier / Type',
       scope: ['storage.modifier.import.java', 'storage.type.java', 'storage.type.generic.java'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Java instanceof',
@@ -1282,7 +1282,7 @@ return {
     {
       name: 'C Type POSIX-Reserved',
       scope: ['support.type.posix-reserved.c', 'support.type.posix-reserved.cpp'],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'C sizeof',
@@ -1296,12 +1296,12 @@ return {
         'entity.name.scope-resolution.function.call',
         'entity.name.scope-resolution.function.definition',
       ],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'C# Storage Type',
       scope: ['storage.type.cs'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'C# Local Variable',
@@ -1335,7 +1335,7 @@ return {
     {
       name: 'Python Self',
       scope: ['variable.parameter.function.language.special.self.python'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Python Parameter',
@@ -1345,7 +1345,7 @@ return {
     {
       name: 'Python Type',
       scope: ['support.type.python'],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'Python Logical',
@@ -1371,7 +1371,7 @@ return {
     {
       name: 'Python Function Call Generic',
       scope: ['meta.function-call.generic.python'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Python Placeholder',
@@ -1381,12 +1381,12 @@ return {
     {
       name: 'Python Function Decorator @',
       scope: ['meta.function.decorator.python'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Python Function Decorator Support',
       scope: ['support.token.decorator.python', 'meta.function.decorator.identifier.python'],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'Python Keyword Control',
@@ -1405,12 +1405,12 @@ return {
     {
       name: 'Rust Support Function',
       scope: ['support.function.std.rust'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Rust Entity Name Lifetime',
       scope: ['entity.name.lifetime.rust'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'Rust Variable Language',
@@ -1430,7 +1430,7 @@ return {
     {
       name: 'Rust Support Constant Core',
       scope: ['support.constant.core.rust'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
+      settings: { foreground: tokens.number },
     },
 
     // ════════════════════════════════════════════════════════
@@ -1449,7 +1449,7 @@ return {
     {
       name: 'Go Package Name',
       scope: ['entity.name.package.go'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
 
     // ════════════════════════════════════════════════════════
@@ -1464,7 +1464,7 @@ return {
         'entity.other.alias.php',
         'meta.interface.php',
       ],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'PHP Error Suppression',
@@ -1494,7 +1494,7 @@ return {
         'keyword.other.type.php',
         'keyword.other.array.phpdoc.php',
       ],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
     {
       name: 'PHP Call Function',
@@ -1503,7 +1503,7 @@ return {
         'meta.function-call.object.php',
         'meta.function-call.static.php',
       ],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'PHP Function Resets (punctuation)',
@@ -1617,7 +1617,7 @@ return {
         'source.stylus support.type.property-name',
         'source.postcss support.type.property-name',
       ],
-      settings: { foreground: tokens.type, fontStyle: 'bold' },
+      settings: { foreground: tokens.type },
     },
     {
       name: 'CSS Pseudo-Elements / Pseudo-Classes',
@@ -1625,7 +1625,7 @@ return {
         'entity.other.attribute-name.pseudo-element',
         'entity.other.attribute-name.pseudo-class',
       ],
-      settings: { foreground: tokens.builtin, fontStyle: 'bold' },
+      settings: { foreground: tokens.builtin },
     },
     {
       name: 'Sass Selector',
@@ -1682,7 +1682,7 @@ return {
     {
       name: 'Haskell Storage Type',
       scope: ['storage.type.haskell'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
+      settings: { foreground: tokens.number },
     },
 
     // ════════════════════════════════════════════════════════
@@ -1829,7 +1829,7 @@ return {
     {
       name: 'Types (Swift, VB)',
       scope: ['support.type.swift', 'support.type.vb.asp'],
-      settings: { foreground: tokens.class, fontStyle: 'bold' },
+      settings: { foreground: tokens.class },
     },
 
     // ════════════════════════════════════════════════════════
@@ -2164,7 +2164,7 @@ return {
     {
       name: 'Markdown Link Title/Description',
       scope: ['string.other.link.title.markdown', 'string.other.link.description.markdown'],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'Markdown Quote',
@@ -2223,7 +2223,7 @@ return {
     {
       name: 'Markdown Separator',
       scope: ['meta.separator'],
-      settings: { foreground: tokens.gray, fontStyle: 'bold' },
+      settings: { foreground: tokens.gray },
     },
     {
       name: 'Markup Table',
@@ -2269,12 +2269,12 @@ return {
         'tag.decorator.js entity.name.tag.js',
         'tag.decorator.js punctuation.definition.tag.js',
       ],
-      settings: { foreground: tokens.function, fontStyle: 'bold' },
+      settings: { foreground: tokens.function },
     },
     {
       name: 'ES7 Bind Operator',
       scope: ['source.js constant.other.object.key.js string.unquoted.label.js'],
-      settings: { foreground: tokens.invalid, fontStyle: 'bold' },
+      settings: { foreground: tokens.invalid },
     },
     {
       name: 'Meta Brace Square',
@@ -2284,7 +2284,7 @@ return {
     {
       name: 'Comment (bold style)',
       scope: ['comment.line.double-slash', 'comment.block.documentation'],
-      settings: { fontStyle: 'bold' },
+      settings: { },
     },
   ],
 };
