@@ -437,7 +437,7 @@ return {
     // ── Tabs ───────────────────────────────────────────────
     'tab.activeBackground':             palette.secondary,
     'tab.activeForeground':             palette.bg,
-    'tab.activeBorder':                 palette.red,
+    'tab.activeBorder':                 palette.secondary,
     'tab.activeBorderTop':              palette.white,
     'tab.inactiveBackground':           palette.primaryFaint,
     'tab.inactiveForeground':           palette.primaryMid,
@@ -499,11 +499,11 @@ return {
     'minimapSlider.activeBackground':   alpha(palette.primary, '60'),
 
     // ── Breadcrumb ─────────────────────────────────────────
-    'breadcrumb.background':                palette.bg,
-    'breadcrumb.foreground':                palette.secondaryDim,
-    'breadcrumb.focusForeground':           palette.secondaryBright,
-    'breadcrumb.activeSelectionForeground': palette.primaryBright,
-    'breadcrumbPicker.background':          palette.primaryGhost,
+    'breadcrumb.background':                palette.secondary,
+    'breadcrumb.foreground':                palette.black,
+    'breadcrumb.focusForeground':           palette.primaryWhite,
+    'breadcrumb.activeSelectionForeground': palette.white,
+    'breadcrumbPicker.background':          palette.bgLighter,
 
     // ── Git Decorations ────────────────────────────────────
     'gitDecoration.addedResourceForeground':         palette.primaryMid,
