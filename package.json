@@ -1,0 +1,39 @@
+{
+  "name": "xx121",
+  "displayName": "XX121",
+  "description": "The perfect theme",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nathanmillwater/vsce-XX121"
+  },
+  "scripts": {
+    "build:theme": "node build-theme.js",
+    "preversion": "node build-theme.js",
+    "version": "git add themes/XX121-color-theme.json themes/XX121-yellow-color-theme.json",
+    "postversion": "git push --follow-tags",
+    "release": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major"
+  },
+  "engines": {
+    "vscode": "^1.109.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "XX121",
+        "uiTheme": "hc-black",
+        "path": "./themes/XX121-color-theme.json"
+      },
+      {
+        "label": "XX121 Yellow",
+        "uiTheme": "hc-black",
+        "path": "./themes/XX121-yellow-color-theme.json"
+      }
+    ]
+  }
+}
