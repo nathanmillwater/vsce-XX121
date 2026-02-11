@@ -98,7 +98,7 @@ const palettes = {
 function buildTheme(name, palette) {
 
 const tokens = {
-  comment:    palette.primaryDim,
+  comment:    palette.red,
   variable:   palette.primaryBright,
   keyword:    palette.primary,
   operator:   palette.primary,
