@@ -3,7 +3,6 @@
   "displayName": "XX121",
   "description": "The perfect theme",
   "version": "0.1.0",
-  "publisher": "Nathan Millwater",
   "repository": {
     "type": "git",
     "url": "https://github.com/nathanmillwater/vsce-XX121"
