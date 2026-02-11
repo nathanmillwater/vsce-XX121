@@ -306,6 +306,13 @@ return {
     'statusBarItem.prominentForeground':   palette.white,
     'statusBarItem.remoteBackground':      palette.primary,
     'statusBarItem.remoteForeground':      palette.black,
+    'statusBarItem.errorBackground':       palette.redDim,
+    'statusBarItem.errorForeground':       palette.white,
+    'statusBarItem.warningBackground':     palette.secondaryDim,
+    'statusBarItem.warningForeground':     palette.white,
+    'problemsErrorIcon.foreground':        palette.red,
+    'problemsWarningIcon.foreground':      palette.secondary,
+    'problemsInfoIcon.foreground':         palette.primary,
 
     // ── Title Bar ──────────────────────────────────────────
     'titleBar.activeBackground':   palette.primaryDim,
