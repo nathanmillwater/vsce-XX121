@@ -1,0 +1,58 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Determine next version
+        id: version
+        run: |
+          LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            NEXT="1.0.0"
+          else
+            VERSION="${LATEST_TAG#v}"
+            MAJOR=$(echo "$VERSION" | cut -d. -f1)
+            MINOR=$(echo "$VERSION" | cut -d. -f2)
+            PATCH=$(echo "$VERSION" | cut -d. -f3)
+            NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          fi
+          echo "next=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "Next version: $NEXT"
+
+      - name: Set version in package.json
+        run: npm version "${{ steps.version.outputs.next }}" --no-git-tag-version --allow-same-version
+
+      - name: Build theme
+        run: node build-theme.js
+
+      - name: Package extension
+        run: npx @vscode/vsce package
+
+      - name: Create tag and release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.next }}
+          files: "*.vsix"
+          generate_release_notes: true
+
+      # - name: Publish to VS Code Marketplace
+      #   run: npx @vscode/vsce publish
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
