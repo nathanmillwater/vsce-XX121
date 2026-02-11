@@ -1,6 +1,6 @@
-# MU/TH/UR 6000
+# XX121 - The Perfect Theme
 
-A dark VS Code color theme inspired by the CRT interfaces of The Company. High-contrast phosphor glows on pitch-black backgrounds.
+A dark VS Code color theme inspired by the CRT interfaces of The Company.
 
 ## Installation
 
