@@ -277,10 +277,11 @@ return {
     'sideBar.foreground':                  palette.primaryBright,
     'sideBar.border':                      palette.primaryMid,
     'sideBar.dropBackground':              alpha(palette.primary, '30'),
-    'sideBarTitle.foreground':             palette.white,
-    'sideBarSectionHeader.background':     palette.primaryFaint,
-    'sideBarSectionHeader.foreground':     palette.primaryBright,
-    'sideBarSectionHeader.border':         palette.primary,
+    'sideBarTitle.foreground':             palette.primaryWhite,
+    'sideBarTitle.background':             palette.primaryDark,
+    'sideBarSectionHeader.background':     palette.secondary,
+    'sideBarSectionHeader.foreground':     palette.black,
+    'sideBarSectionHeader.border':         palette.secondary,
 
     // ── Activity Bar ───────────────────────────────────────
     'activityBar.background':          palette.primaryDim,
@@ -338,15 +339,15 @@ return {
 
     // ── Menu ───────────────────────────────────────────────
     'menubar.selectionForeground': palette.black,
-    'menubar.selectionBackground': palette.primaryWhite,
-    'menubar.selectionBorder':     palette.white,
+    'menubar.selectionBackground': palette.secondary,
+    'menubar.selectionBorder':     palette.secondaryBright,
     'menu.foreground':             palette.primaryWhite,
     'menu.background':             palette.bg,
     'menu.selectionForeground':    palette.black,
     'menu.selectionBackground':    palette.secondary,
     'menu.selectionBorder':        palette.none,
-    'menu.separatorBackground':    palette.primaryDim,
-    'menu.border':                 palette.primary,
+    'menu.separatorBackground':    palette.secondaryDim,
+    'menu.border':                 palette.secondaryDim,
 
     // ── Buttons ────────────────────────────────────────────
     'button.background':              palette.primaryDim,
@@ -464,8 +465,8 @@ return {
     'panel.background':               palette.bg,
     'panel.foreground':               palette.primary,
     'panel.border':                   palette.border,
-    'panelTitle.activeBorder':        palette.primary,
-    'panelTitle.activeForeground':    palette.primaryBright,
+    'panelTitle.activeBorder':        palette.secondary,
+    'panelTitle.activeForeground':    palette.secondaryBright,
     'panelTitle.inactiveForeground':  palette.primaryGhost,
     'panelSection.border':            palette.border,
 
