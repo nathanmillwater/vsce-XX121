@@ -343,10 +343,10 @@ return {
     'menu.foreground':             palette.primaryWhite,
     'menu.background':             palette.bg,
     'menu.selectionForeground':    palette.black,
-    'menu.selectionBackground':    palette.primaryBright,
+    'menu.selectionBackground':    palette.secondary,
     'menu.selectionBorder':        palette.none,
-    'menu.separatorBackground':    palette.primaryMid,
-    'menu.border':                 palette.primaryMid,
+    'menu.separatorBackground':    palette.primaryDim,
+    'menu.border':                 palette.primary,
 
     // ── Buttons ────────────────────────────────────────────
     'button.background':              palette.primaryDim,
