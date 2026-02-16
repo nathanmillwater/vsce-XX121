@@ -1,17 +1,44 @@
 {
   "name": "xx121",
   "displayName": "XX121",
-  "description": "The perfect theme",
+  "description": "A dark VS Code color theme inspired by CRT terminal interfaces",
   "version": "0.1.0",
+  "publisher": "nathanmillwater",
+  "author": {
+    "name": "Nathan Millwater"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/nathanmillwater/vsce-XX121"
   },
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#06101a",
+    "theme": "dark"
+  },
+  "keywords": [
+    "theme",
+    "dark",
+    "crt",
+    "retro",
+    "terminal",
+    "color-theme",
+    "high-contrast"
+  ],
   "scripts": {
-    "build": "node build-theme.js"
+    "build": "node build-theme.js",
+    "watch": "node -e \"const{watch}=require('fs');const{execSync}=require('child_process');watch('./src',{recursive:true},()=>{try{execSync('node build-theme.js',{stdio:'inherit'})}catch{}});console.log('Watching src/ for changes...')\"",
+    "package": "npx @vscode/vsce package",
+    "preversion": "node build-theme.js",
+    "version": "git add themes/",
+    "postversion": "git push --follow-tags",
+    "release": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major"
   },
   "engines": {
-    "vscode": "^1.109.0"
+    "vscode": "^1.60.0"
   },
   "categories": [
     "Themes"
@@ -21,12 +48,17 @@
       {
         "label": "XX121",
         "uiTheme": "hc-black",
-        "path": "./themes/XX121-theme.json"
+        "path": "./themes/XX121-color-theme.json"
       },
       {
         "label": "XX121 Yellow",
         "uiTheme": "hc-black",
-        "path": "./themes/XX121-yellow-theme.json"
+        "path": "./themes/XX121-yellow-color-theme.json"
+      },
+      {
+        "label": "XX121 Green",
+        "uiTheme": "hc-black",
+        "path": "./themes/XX121-green-color-theme.json"
       }
     ]
   }

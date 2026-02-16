@@ -1,8 +1,13 @@
 .github/**
 .vscode/**
 .vscode-test/**
+.claude/**
 .gitignore
+.gitattributes
 .env
+src/**
 build-theme.js
 node_modules/**
+samples/**
 *.vsix
+vsc-extension-quickstart.md
