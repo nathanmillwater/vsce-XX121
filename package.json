@@ -12,7 +12,6 @@
     "type": "git",
     "url": "https://github.com/nathanmillwater/vsce-XX121"
   },
-  "icon": "icon.png",
   "galleryBanner": {
     "color": "#06101a",
     "theme": "dark"
