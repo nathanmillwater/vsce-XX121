@@ -1,0 +1,92 @@
+<!-- Sample HTML/CSS for theme testing -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XX121 Theme Preview</title>
+  <style>
+    :root {
+      --bg-primary: #06101a;
+      --fg-primary: #a4d8f0;
+      --accent: #d4a030;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--fg-primary);
+      font-family: var(--font-mono);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: var(--accent);
+      font-size: 2rem;
+      border-bottom: 1px solid #1a3850;
+      padding-bottom: 0.5rem;
+    }
+
+    .card {
+      background: #0a1624;
+      border: 1px solid #1a3850;
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg-primary);
+      padding: 0.2em 0.6em;
+      border-radius: 3px;
+      font-size: 0.75rem;
+    }
+
+    #status::before {
+      content: '● ';
+      color: #58b878;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>XX121 <span class="badge">v1.0</span></h1>
+    <div class="card" id="main-card" data-theme="dark">
+      <p id="status">System online</p>
+      <p>The perfect theme for <em>focused</em> work.</p>
+      <a href="https://github.com/nathanmillwater/vsce-XX121">View source</a>
+    </div>
+  </div>
+  <script>
+    const status = document.getElementById('status');
+    status.textContent = `Loaded at ${new Date().toISOString()}`;
+  </script>
+</body>
+</html>

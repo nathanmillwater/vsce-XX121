@@ -1,0 +1,19 @@
+{
+  "name": "xx121-sample",
+  "version": "1.0.0",
+  "description": "Sample JSON for theme testing",
+  "config": {
+    "theme": "dark",
+    "fontSize": 14,
+    "lineHeight": 1.6,
+    "enabled": true,
+    "colors": ["#a4d8f0", "#d4a030", "#58b878"],
+    "nested": {
+      "deep": {
+        "value": null
+      }
+    }
+  },
+  "tags": ["theme", "vscode", "dark"],
+  "count": 42
+}
