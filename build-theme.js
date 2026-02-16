@@ -13,32 +13,62 @@ const alpha = (color, a) => color + a;
 // by semantic role. Change these to reskin the entire theme.
 
 const palettes = {
-  XX121: {
+  // Default — cool blue phosphor with amber accents
+  blue: {
     // Backgrounds (darkest to lightest)
-    bgDeepest: '#19181a',  // activity bar, deepest panels
-    bgDeep: '#221f22',  // sidebar, title bar
-    bg: '#2d2a2e',  // editor background
-    bgElevated: '#403e41',  // panels, inputs, hover widgets
-    bgOverlay: '#5b595c',  // borders, inactive elements
+    bgDeepest:  '#000000',  // absolute black
+    bgDeep:     '#020609',  // main editor bg
+    bg:         '#06101a',  // sidebar, title bar
+    bgElevated: '#0a1624',  // panels, inputs
+    bgOverlay:  '#1a3850',  // borders, overlays
 
     // Foregrounds (dimmest to brightest)
-    fgFaint: '#5b595c',  // line numbers, ignored items
-    fgDim: '#727072',  // comments, focus borders
-    fgMuted: '#939293',  // descriptions, inactive tabs
-    fgSoft: '#c1c0c0',  // secondary foreground
-    fg: '#fcfcfa',  // primary foreground
+    fgFaint:    '#283848',  // ghost text, ignored items
+    fgDim:      '#386888',  // comments, dim borders
+    fgMuted:    '#5898b8',  // descriptions, inactive
+    fgSoft:     '#7ab8d8',  // secondary foreground
+    fg:         '#a4d8f0',  // primary foreground
 
     // Accent colors
-    red: '#ff6188',  // keywords, errors, tags
-    orange: '#fc9867',  // warnings, parameters, orange
-    yellow: '#ffd866',  // strings, accent, active items
-    green: '#a9dc76',  // functions, added, success
-    cyan: '#78dce8',  // types, info, classes
-    purple: '#ab9df2',  // constants, numbers
+    red:        '#d04444',  // keywords, errors, tags
+    orange:     '#e8bd60',  // warnings, parameters
+    yellow:     '#d4a030',  // strings, accent, active
+    green:      '#58b878',  // functions, added, success
+    cyan:       '#50b8b8',  // types, info, classes
+    purple:     '#b070a0',  // constants, numbers
 
     // Utility
     transparent: '#00000000',
-    white: '#FFFFFF',
+    white:       '#f8f7d8',
+  },
+
+  // Yellow — warm amber phosphor with blue accents
+  yellow: {
+    // Backgrounds (darkest to lightest)
+    bgDeepest:  '#000000',  // absolute black
+    bgDeep:     '#090602',  // main editor bg
+    bg:         '#1a1006',  // sidebar, title bar
+    bgElevated: '#24180a',  // panels, inputs
+    bgOverlay:  '#503a1a',  // borders, overlays
+
+    // Foregrounds (dimmest to brightest)
+    fgFaint:    '#484028',  // ghost text, ignored items
+    fgDim:      '#886018',  // comments, dim borders
+    fgMuted:    '#b88520',  // descriptions, inactive
+    fgSoft:     '#d4a030',  // secondary foreground
+    fg:         '#e8bd60',  // primary foreground
+
+    // Accent colors
+    red:        '#d04444',  // keywords, errors, tags
+    orange:     '#a4d8f0',  // warnings, parameters
+    yellow:     '#7ab8d8',  // strings, accent, active
+    green:      '#68b858',  // functions, added, success
+    cyan:       '#58b8a8',  // types, info, classes
+    purple:     '#b87098',  // constants, numbers
+
+    // Utility
+    transparent: '#00000000',
+    white:       '#f8f7d8',
   },
 };
 
@@ -1001,7 +1031,8 @@ function buildTheme(name, p) {
 
 // ── Variants ─────────────────────────────────────────────────
 const variants = [
-  { name: 'XX121', palette: palettes.XX121, file: 'XX121-theme.json' },
+  { name: 'XX121',        palette: palettes.blue,   file: 'XX121-theme.json' },
+  { name: 'XX121 Yellow', palette: palettes.yellow,  file: 'XX121-yellow-theme.json' },
 ];
 
 // ── Write Output ────────────────────────────────────────────
