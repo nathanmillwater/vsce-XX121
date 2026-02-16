@@ -21,12 +21,12 @@
       {
         "label": "XX121",
         "uiTheme": "hc-black",
-        "path": "./themes/XX121-color-theme.json"
+        "path": "./themes/XX121-theme.json"
       },
       {
         "label": "XX121 Yellow",
         "uiTheme": "hc-black",
-        "path": "./themes/XX121-yellow-color-theme.json"
+        "path": "./themes/XX121-yellow-theme.json"
       }
     ]
   }
