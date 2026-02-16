@@ -2,2313 +2,1043 @@ const fs = require('fs');
 const path = require('path');
 
 // ============================================================
-// MU/TH/UR 6000 — Complete Theme Builder
-// Based on comprehensive VSCode theme reference template.
-// All colors extracted to semantic palette variables so the
-// entire theme can be reskinned by changing the palette.
+// Every color extracted into a
+// standardised palette for easy future modification.
 // ============================================================
 
-// Helper: append an alpha hex suffix to a 6-digit hex color
 const alpha = (color, a) => color + a;
 
-// ── Palettes ────────────────────────────────────────────────
-// Each palette follows the same shape so the theme builder can
-// be driven by any of them.
+// ── Palette ─────────────────────────────────────────────────
+// All unique colors from the template, organized
+// by semantic role. Change these to reskin the entire theme.
 
 const palettes = {
   // Default — cool blue phosphor with amber accents
   blue: {
-    bg:        '#020609',
-    bgLight:   '#06101a',
-    bgLighter: '#0a1624',
-    bgPanel:   '#040c14',
+    // Backgrounds (darkest to lightest)
+    bgDeepest:  '#000000',  // absolute black
+    bgDeep:     '#020609',  // main editor bg
+    bg:         '#06101a',  // sidebar, title bar
+    bgElevated: '#0a1624',  // panels, inputs
+    bgOverlay:  '#1a3850',  // borders, overlays
 
-    primary:       '#7ab8d8',
-    primaryBright: '#a4d8f0',
-    primaryWhite:  '#c8e8f8',
-    primaryMid:    '#5898b8',
-    primaryDim:    '#386888',
-    primaryFaint:  '#1a3850',
-    primaryGhost:  '#283848',
+    // Foregrounds (dimmest to brightest)
+    fgFaint:    '#283848',  // ghost text, ignored items
+    fgDim:      '#386888',  // comments, dim borders
+    fgMuted:    '#5898b8',  // descriptions, inactive
+    fgSoft:     '#7ab8d8',  // secondary foreground
+    fg:         '#a4d8f0',  // primary foreground
 
-    secondary:       '#d4a030',
-    secondaryBright: '#e8bd60',
-    secondaryDim:    '#a06d20',
-    secondaryGhost:  '#6b5530',
+    // Accent colors
+    red:        '#d04444',  // keywords, errors, tags
+    orange:     '#e8bd60',  // warnings, parameters
+    yellow:     '#d4a030',  // strings, accent, active
+    green:      '#58b878',  // functions, added, success
+    cyan:       '#50b8b8',  // types, info, classes
+    purple:     '#b070a0',  // constants, numbers
 
-    red:       '#d04444',
-    redBright: '#e06666',
-    redDim:    '#882222',
-
-    green:       '#58b878',
-    greenBright: '#78d898',
-    cyan:        '#50b8b8',
-    cyanBright:  '#78d8d8',
-    magenta:       '#b070a0',
-    magentaBright: '#d098c0',
-
-    black: '#000000',
-    white: '#f8f7d8',
-    border:       '#383412',
-    borderBright: '#504b1e',
-    none:         '#00000000',
+    // Utility
+    transparent: '#00000000',
+    white:       '#f8f7d8',
   },
 
   // Yellow — warm amber phosphor with blue accents
   yellow: {
-    bg:        '#090602',
-    bgLight:   '#1a1006',
-    bgLighter: '#24180a',
-    bgPanel:   '#140c04',
+    // Backgrounds (darkest to lightest)
+    bgDeepest:  '#000000',  // absolute black
+    bgDeep:     '#090602',  // main editor bg
+    bg:         '#1a1006',  // sidebar, title bar
+    bgElevated: '#24180a',  // panels, inputs
+    bgOverlay:  '#503a1a',  // borders, overlays
 
-    primary:       '#d4a030',
-    primaryBright: '#e8bd60',
-    primaryWhite:  '#f8e8c8',
-    primaryMid:    '#b88520',
-    primaryDim:    '#886018',
-    primaryFaint:  '#503a1a',
-    primaryGhost:  '#484028',
+    // Foregrounds (dimmest to brightest)
+    fgFaint:    '#484028',  // ghost text, ignored items
+    fgDim:      '#886018',  // comments, dim borders
+    fgMuted:    '#b88520',  // descriptions, inactive
+    fgSoft:     '#d4a030',  // secondary foreground
+    fg:         '#e8bd60',  // primary foreground
 
-    secondary:       '#7ab8d8',
-    secondaryBright: '#a4d8f0',
-    secondaryDim:    '#386888',
-    secondaryGhost:  '#283848',
+    // Accent colors
+    red:        '#d04444',  // keywords, errors, tags
+    orange:     '#a4d8f0',  // warnings, parameters
+    yellow:     '#7ab8d8',  // strings, accent, active
+    green:      '#68b858',  // functions, added, success
+    cyan:       '#58b8a8',  // types, info, classes
+    purple:     '#b87098',  // constants, numbers
 
-    red:       '#d04444',
-    redBright: '#e06666',
-    redDim:    '#882222',
-
-    green:       '#68b858',
-    greenBright: '#88d878',
-    cyan:        '#58b8a8',
-    cyanBright:  '#78d8c8',
-    magenta:       '#b87098',
-    magentaBright: '#d898b8',
-
-    black: '#000000',
-    white: '#f8f7d8',
-    border:       '#383412',
-    borderBright: '#504b1e',
-    none:         '#00000000',
+    // Utility
+    transparent: '#00000000',
+    white:       '#f8f7d8',
   },
 };
+
+// ── Token Semantic Map ──────────────────────────────────────
+// Maps syntax roles to palette keys for tokenColors.
+function tokenMap(p) {
+  return {
+    comment: p.fgDim,
+    commentDoc: p.fgSoft,
+    keyword: p.red,
+    operator: p.red,
+    operatorMeta: p.fgMuted,
+    storage: p.red,
+    storageType: p.cyan,
+    function: p.green,
+    string: p.yellow,
+    number: p.purple,
+    constant: p.purple,
+    constantOther: p.fg,
+    class: p.cyan,
+    tag: p.red,
+    attribute: p.cyan,
+    variable: p.fg,
+    variableParam: p.orange,
+    variableLang: p.fgSoft,
+    type: p.cyan,
+    label: p.purple,
+    link: p.green,
+    linkTitle: p.red,
+    linkDesc: p.cyan,
+    heading: p.yellow,
+    invalid: p.red,
+    invalidDeprecated: p.orange,
+    embedded: p.orange,
+    interpolation: p.orange,
+    punctuation: p.fgMuted,
+    punctuationComment: p.fgDim,
+    punctuationVar: p.fgSoft,
+    markup: p.fg,
+    markupRaw: p.orange,
+    cssClass: p.green,
+    cssId: p.orange,
+    cssPseudo: p.cyan,
+    scssVar: p.orange,
+    jsonKey: p.fg,
+    yamlKey: p.red,
+    gitRemote: p.red,
+    gitLocal: p.cyan,
+    gitHead: p.fg,
+    gitHash: p.purple,
+    diffRange: p.orange,
+    region: p.fg,
+  };
+}
 
 // ── Theme Builder ───────────────────────────────────────────
-// Generates a complete theme object from a palette and name.
-function buildTheme(name, palette) {
-
-const tokens = {
-  comment:    palette.red,
-  variable:   palette.primaryBright,
-  keyword:    palette.primary,
-  operator:   palette.primary,
-  function:   palette.secondary,
-  string:     palette.green,
-  number:     palette.secondary,
-  class:      palette.secondaryBright,
-  type:       palette.cyan,
-  tag:        palette.primaryBright,
-  attribute:  palette.primaryBright,
-  regex:      palette.secondary,
-  builtin:    palette.primaryMid,
-  invalid:    palette.red,
-  link:       palette.primaryBright,
-  linkDesc:   palette.primaryMid,
-  linkAnchor: palette.primary,
-  heading:    palette.primaryWhite,
-  markup:     palette.primaryBright,
-  gray:       palette.primaryGhost,
-};
-
-return {
-  name,
-  type: 'dark',
-  semanticHighlighting: true,
-  semanticTokenColors: {
-    'enumMember':              { foreground: tokens.builtin },
-    'variable.constant':       { foreground: tokens.number },
-    'variable.defaultLibrary': { foreground: tokens.class },
-  },
-
-  colors: {
-    // ── General ────────────────────────────────────────────
-    'foreground':                            palette.primary,
-    'focusBorder':                           palette.primaryDim,
-    'selection.background':                  alpha(palette.primary, '40'),
-    'icon.foreground':                       palette.primary,
-    'widget.shadow':                         alpha(palette.black, '5c'),
-    'textLink.foreground':                   palette.primaryBright,
-
-    // ── Editor ─────────────────────────────────────────────
-    'editor.background':                     palette.bg,
-    'editor.foreground':                     palette.primary,
-    'editorLineNumber.foreground':           palette.primaryDim,
-    'editorLineNumber.activeForeground':     palette.primary,
-    'editorCursor.foreground':               palette.redBright,
-    'editorCursor.background':               palette.bg,
-
-    'editor.selectionBackground':            alpha(palette.primary, '40'),
-    'editor.selectionForeground':            palette.primaryWhite,
-    'editor.inactiveSelectionBackground':    alpha(palette.primary, '20'),
-    'editor.selectionHighlightBackground':   alpha(palette.primary, '26'),
-    'editor.selectionHighlightBorder':       palette.primaryDim,
-
-    'editor.findMatchBackground':            alpha(palette.secondary, '30'),
-    'editor.findMatchBorder':                palette.secondary,
-    'editor.findMatchHighlightBackground':   alpha(palette.primary, '20'),
-    'editor.findMatchHighlightBorder':       palette.none,
-    'editor.findRangeHighlightBackground':   alpha(palette.primary, '15'),
-    'editor.findRangeHighlightBorder':       palette.none,
-
-    'editor.rangeHighlightBackground':       alpha(palette.primary, '0b'),
-    'editor.rangeHighlightBorder':           palette.none,
-    'editor.hoverHighlightBackground':       alpha(palette.primary, '40'),
-
-    'editor.wordHighlightBackground':        alpha(palette.primary, '20'),
-    'editor.wordHighlightStrongBackground':  alpha(palette.primary, '30'),
-
-    'editor.lineHighlightBackground':        alpha(palette.primaryDim, '18'),
-    'editor.lineHighlightBorder':            palette.bgLighter,
-
-    'editorLink.activeForeground':           palette.primaryBright,
-    'editorWhitespace.foreground':           palette.primaryFaint,
-
-    'editorIndentGuide.background':          palette.border,
-    'editorIndentGuide.activeBackground':    palette.borderBright,
-    'editorIndentGuide.background1':         palette.border,
-    'editorIndentGuide.activeBackground1':   palette.borderBright,
-
-    'editorRuler.foreground':                palette.border,
-
-    'editorBracketMatch.background':         alpha(palette.secondary, '30'),
-    'editorBracketMatch.border':             palette.secondaryBright,
-
-    'editor.foldBackground':                 alpha(palette.primary, '15'),
-
-    'editorOverviewRuler.background':        palette.none,
-    'editorOverviewRuler.border':            alpha(palette.primaryDim, '4d'),
-    'editorOverviewRuler.errorForeground':   palette.red,
-    'editorOverviewRuler.warningForeground': palette.secondary,
-    'editorOverviewRuler.infoForeground':    palette.primary,
-
-    'editorError.foreground':                palette.red,
-    'editorError.background':                palette.none,
-    'editorError.border':                    palette.none,
-    'editorWarning.foreground':              palette.secondary,
-    'editorWarning.background':              palette.none,
-    'editorWarning.border':                  palette.none,
-    'editorInfo.foreground':                 palette.primary,
-    'editorInfo.background':                 palette.none,
-    'editorInfo.border':                     palette.none,
-    'editorHint.foreground':                 palette.primaryMid,
-
-    'editorGutter.background':               palette.bg,
-    'editorGutter.addedBackground':          palette.primaryMid,
-    'editorGutter.modifiedBackground':       palette.secondary,
-    'editorGutter.deletedBackground':        palette.red,
-    'editorGutter.foldingControlForeground': palette.primaryDim,
-    'editorGutter.commentRangeForeground':   palette.primaryDim,
-
-    'editorCodeLens.foreground':             palette.primaryDim,
-
-    // ── Editor Widget (find/replace, suggest, hover) ───────
-    'editorWidget.background':               palette.bg,
-    'editorWidget.foreground':               palette.primary,
-    'editorWidget.border':                   palette.border,
-    'editorWidget.resizeBorder':             palette.primaryDim,
-
-    'editorSuggestWidget.background':        palette.bg,
-    'editorSuggestWidget.border':            palette.border,
-    'editorSuggestWidget.foreground':        palette.primary,
-    'editorSuggestWidget.highlightForeground': palette.primaryBright,
-    'editorSuggestWidget.selectedBackground': alpha(palette.primary, '30'),
-
-    'editorHoverWidget.foreground':          palette.primary,
-    'editorHoverWidget.background':          palette.bg,
-    'editorHoverWidget.border':              palette.border,
-
-    // ── Diff Editor ────────────────────────────────────────
-    'diffEditor.insertedTextBackground':     alpha(palette.primaryMid, '33'),
-    'diffEditor.removedTextBackground':      alpha(palette.red, '33'),
-    'diffEditor.insertedLineBackground':     alpha(palette.primaryMid, '0a'),
-    'diffEditor.removedLineBackground':      alpha(palette.red, '0a'),
-    'diffEditor.border':                     palette.border,
-
-    // ── Editor Marker Navigation ───────────────────────────
-    'editorMarkerNavigation.background':        palette.bgLighter,
-    'editorMarkerNavigationError.background':   palette.red,
-    'editorMarkerNavigationWarning.background': palette.secondary,
-    'editorMarkerNavigationInfo.background':    palette.primary,
-
-    // ── Merge ──────────────────────────────────────────────
-    'merge.currentHeaderBackground':         alpha(palette.primaryMid, '80'),
-    'merge.currentContentBackground':        alpha(palette.primaryMid, '40'),
-    'merge.incomingHeaderBackground':        alpha(palette.secondary, '80'),
-    'merge.incomingContentBackground':       alpha(palette.secondary, '40'),
-    'merge.commonHeaderBackground':          palette.bgLighter,
-    'merge.commonContentBackground':         palette.bgLight,
-
-    // ── Terminal ───────────────────────────────────────────
-    'terminal.background':          palette.bg,
-    'terminal.foreground':          palette.primary,
-    'terminal.border':              palette.border,
-    'terminal.ansiBlack':           palette.black,
-    'terminal.ansiRed':             palette.red,
-    'terminal.ansiGreen':           palette.green,
-    'terminal.ansiYellow':          palette.secondary,
-    'terminal.ansiBlue':            palette.primary,
-    'terminal.ansiMagenta':         palette.magenta,
-    'terminal.ansiCyan':            palette.cyan,
-    'terminal.ansiWhite':           palette.white,
-    'terminal.ansiBrightBlack':     palette.primaryGhost,
-    'terminal.ansiBrightRed':       palette.redBright,
-    'terminal.ansiBrightGreen':     palette.greenBright,
-    'terminal.ansiBrightYellow':    palette.secondaryBright,
-    'terminal.ansiBrightBlue':      palette.primaryBright,
-    'terminal.ansiBrightMagenta':   palette.magentaBright,
-    'terminal.ansiBrightCyan':      palette.cyanBright,
-    'terminal.ansiBrightWhite':     palette.white,
-    'terminal.selectionBackground': alpha(palette.primary, '40'),
-    'terminalCursor.foreground':    palette.primaryBright,
-    'terminalCursor.background':    palette.bg,
-
-    // ── Sidebar ────────────────────────────────────────────
-    'sideBar.background':                  palette.bg,
-    'sideBar.foreground':                  palette.primaryBright,
-    'sideBar.border':                      palette.primaryMid,
-    'sideBar.dropBackground':              alpha(palette.primary, '30'),
-    'sideBarTitle.foreground':             palette.primaryWhite,
-    'sideBarTitle.background':             palette.primaryDark,
-    'sideBarSectionHeader.background':     palette.secondary,
-    'sideBarSectionHeader.foreground':     palette.black,
-    'sideBarSectionHeader.border':         palette.secondary,
-
-    // ── Activity Bar ───────────────────────────────────────
-    'activityBar.background':          palette.primaryDim,
-    'activityBar.foreground':          palette.white,
-    'activityBar.activeBorder':       palette.red,
-    'activityBar.inactiveForeground':  alpha(palette.primaryWhite, '60'),
-    'activityBar.activeBackground':  palette.secondary,
-    'activityBar.border':              palette.black,
-    'activityBarBadge.background':     palette.redDim,
-    'activityBarBadge.foreground':     palette.white,
-
-    // ── Status Bar ─────────────────────────────────────────
-    'statusBar.background':                palette.primaryDim,
-    'statusBar.foreground':                palette.primaryWhite,
-    'statusBar.border':                    palette.black,
-    'statusBar.debuggingBackground':       palette.secondaryBright,
-    'statusBar.debuggingForeground':       palette.black,
-    'statusBar.noFolderBackground':        palette.primaryMid,
-    'statusBar.noFolderForeground':        palette.black,
-    'statusBarItem.activeBackground':      alpha(palette.white, '25'),
-    'statusBarItem.hoverBackground':       palette.primaryWhite,
-    'statusBarItem.prominentBackground':   palette.red,
-    'statusBarItem.prominentForeground':   palette.white,
-    'statusBarItem.remoteBackground':      palette.primary,
-    'statusBarItem.remoteForeground':      palette.black,
-    'statusBarItem.errorBackground':       palette.redDim,
-    'statusBarItem.errorForeground':       palette.white,
-    'statusBarItem.warningBackground':     palette.secondaryDim,
-    'statusBarItem.warningForeground':     palette.white,
-    'problemsErrorIcon.foreground':        palette.red,
-    'problemsWarningIcon.foreground':      palette.secondary,
-    'problemsInfoIcon.foreground':         palette.primary,
-
-    // ── Title Bar ──────────────────────────────────────────
-    'titleBar.activeBackground':   palette.primaryDim,
-    'titleBar.activeForeground':   palette.white,
-    'titleBar.inactiveBackground': palette.primaryFaint,
-    'titleBar.inactiveForeground': palette.primaryMid,
-    'titleBar.border':             palette.black,
-
-    // ── Command Center ────────────────────────────────────
-    'commandCenter.foreground':         palette.primaryBright,
-    'commandCenter.background':         palette.bgLighter,
-    'commandCenter.border':             palette.black,
-    'commandCenter.activeForeground':   palette.primaryWhite,
-    'commandCenter.activeBackground':   palette.primaryFaint,
-    'commandCenter.activeBorder':       palette.primary,
-    'commandCenter.inactiveForeground': palette.primaryMid,
-    'commandCenter.inactiveBorder':     palette.primaryGhost,
-
-    // ── Toolbar (nav, layout, action buttons) ─────────────
-    'toolbar.hoverBackground':          alpha(palette.primary, '30'),
-    'toolbar.hoverOutline':             palette.none,
-    'toolbar.activeBackground':         alpha(palette.primary, '40'),
-
-    // ── Menu ───────────────────────────────────────────────
-    'menubar.selectionForeground': palette.black,
-    'menubar.selectionBackground': palette.secondary,
-    'menubar.selectionBorder':     palette.secondaryBright,
-    'menu.foreground':             palette.primaryWhite,
-    'menu.background':             palette.bg,
-    'menu.selectionForeground':    palette.black,
-    'menu.selectionBackground':    palette.secondary,
-    'menu.selectionBorder':        palette.none,
-    'menu.separatorBackground':    palette.secondaryDim,
-    'menu.border':                 palette.secondaryDim,
-
-    // ── Buttons ────────────────────────────────────────────
-    'button.background':              palette.primaryDim,
-    'button.foreground':              palette.white,
-    'button.hoverBackground':         palette.primaryMid,
-    'button.secondaryForeground':     palette.primary,
-    'button.secondaryBackground':     palette.border,
-    'button.secondaryHoverBackground': palette.borderBright,
-
-    // ── Input Fields ───────────────────────────────────────
-    'input.background':            palette.bg,
-    'input.border':                palette.border,
-    'input.foreground':            palette.primary,
-    'input.placeholderForeground': palette.primaryGhost,
-    'input.focusBorder':           palette.primary,
-    'inputOption.activeBackground':  alpha(palette.primary, '40'),
-    'inputOption.activeBorder':      palette.primary,
-    'inputOption.activeForeground':  palette.primaryBright,
-
-    // ── Input Validation ───────────────────────────────────
-    'inputValidation.errorBackground':   alpha(palette.red, '30'),
-    'inputValidation.errorBorder':       palette.red,
-    'inputValidation.infoBorder':        palette.primary,
-    'inputValidation.infoBackground':    alpha(palette.primary, '20'),
-    'inputValidation.warningBackground': alpha(palette.secondary, '30'),
-    'inputValidation.warningBorder':     palette.secondary,
-
-    // ── Dropdown ───────────────────────────────────────────
-    'dropdown.background':     palette.bg,
-    'dropdown.foreground':     palette.primary,
-    'dropdown.border':         palette.border,
-    'dropdown.listBackground': palette.bg,
-
-    // ── Checkbox ───────────────────────────────────────────
-    'checkbox.background': palette.bg,
-    'checkbox.foreground': palette.primary,
-    'checkbox.border':     palette.border,
-
-    // ── Scrollbar ──────────────────────────────────────────
-    'scrollbar.shadow':                palette.primaryBright,
-    'scrollbarSlider.background':      alpha(palette.primaryDim, '66'),
-    'scrollbarSlider.hoverBackground': alpha(palette.primaryDim, 'b3'),
-    'scrollbarSlider.activeBackground': alpha(palette.primary, '66'),
-
-    // ── Badge & Progress ───────────────────────────────────
-    'badge.background':      palette.primary,
-    'badge.foreground':      palette.black,
-    'progressBar.background': palette.primary,
-
-    // ── Notifications ──────────────────────────────────────
-    'notificationCenter.border':            palette.border,
-    'notificationCenterHeader.foreground':  palette.primary,
-    'notificationCenterHeader.background':  palette.bgLight,
-    'notifications.background':             palette.bg,
-    'notifications.foreground':             palette.primary,
-    'notifications.border':                 palette.border,
-    'notificationToast.border':             palette.border,
-    'notificationsErrorIcon.foreground':    palette.red,
-    'notificationsWarningIcon.foreground':  palette.secondary,
-    'notificationsInfoIcon.foreground':     palette.primary,
-    'notificationLink.foreground':          palette.primaryBright,
-
-    // ── List / Tree ────────────────────────────────────────
-    'list.activeSelectionBackground':   alpha(palette.secondary, '30'),
-    'list.activeSelectionForeground':   palette.secondaryBright,
-    'list.focusBackground':             alpha(palette.secondary, '30'),
-    'list.focusForeground':             palette.secondaryBright,
-    'list.hoverBackground':             alpha(palette.primary, '25'),
-    'list.hoverForeground':             palette.secondaryBright,
-    'list.inactiveSelectionBackground': palette.bgLighter,
-    'list.inactiveSelectionForeground': palette.primary,
-    'list.invalidItemForeground':       palette.red,
-    'list.dropBackground':              alpha(palette.secondary, '30'),
-    'list.filterMatchBackground':       alpha(palette.secondary, '30'),
-    'list.filterMatchBorder':           palette.secondary,
-    'list.highlightForeground':         palette.secondaryBright,
-    'tree.indentGuidesStroke':          palette.secondaryBright,
-
-    // ── List Filter Widget ─────────────────────────────────
-    'listFilterWidget.background':       palette.bgLighter,
-    'listFilterWidget.outline':          palette.none,
-    'listFilterWidget.noMatchesOutline': palette.red,
-
-    // ── Picker ─────────────────────────────────────────────
-    'pickerGroup.border':     palette.border,
-    'pickerGroup.foreground': palette.primaryBright,
-
-    // ── Tabs ───────────────────────────────────────────────
-    'tab.activeBackground':             palette.secondary,
-    'tab.activeForeground':             palette.bg,
-    'tab.activeBorder':                 palette.secondary,
-    'tab.activeBorderTop':              palette.white,
-    'tab.inactiveBackground':           palette.primaryFaint,
-    'tab.inactiveForeground':           palette.primaryMid,
-    'tab.border':                       palette.border,
-    'tab.hoverBackground':              palette.primaryDim,
-    'tab.hoverForeground':              palette.primaryWhite,
-    'tab.unfocusedActiveBackground':    palette.primaryFaint,
-    'tab.unfocusedActiveForeground':    palette.primaryMid,
-    'tab.unfocusedActiveBorderTop':     palette.primaryDim,
-    'tab.unfocusedHoverBackground':     palette.primaryFaint,
-    'tab.unfocusedHoverForeground':     palette.primaryMid,
-
-    // ── Editor Groups / Panes ──────────────────────────────
-    'editorGroup.border':                  palette.border,
-    'editorGroup.dropBackground':          alpha(palette.primary, '20'),
-    'editorGroup.emptyBackground':         palette.bg,
-    'editorGroupHeader.tabsBackground':    palette.bg,
-    'editorGroupHeader.tabsBorder':        palette.border,
-    'editorGroupHeader.noTabsBackground':  palette.bg,
-    'editorGroupHeader.border':            palette.border,
-    'editorPane.background':               palette.bg,
-
-    // ── Panel (terminal, output, problems) ─────────────────
-    'panel.background':               palette.bg,
-    'panel.foreground':               palette.primary,
-    'panel.border':                   palette.border,
-    'panelTitle.activeBorder':        palette.secondary,
-    'panelTitle.activeForeground':    palette.secondaryBright,
-    'panelTitle.inactiveForeground':  palette.primaryGhost,
-    'panelSection.border':            palette.border,
-
-    // ── Peek View ──────────────────────────────────────────
-    'peekView.border':                          palette.primary,
-    'peekViewEditor.background':                palette.bg,
-    'peekViewEditorGutter.background':          palette.bg,
-    'peekViewEditor.matchHighlightBackground':  alpha(palette.primary, '40'),
-    'peekViewEditor.matchHighlightBorder':      palette.secondary,
-    'peekViewResult.background':                palette.bg,
-    'peekViewResult.fileForeground':            palette.primary,
-    'peekViewResult.lineForeground':            palette.primaryMid,
-    'peekViewResult.matchHighlightBackground':  alpha(palette.primary, '40'),
-    'peekViewResult.selectionBackground':       alpha(palette.primary, '30'),
-    'peekViewResult.selectionForeground':       palette.primaryBright,
-    'peekViewTitle.background':                 palette.bg,
-    'peekViewTitleDescription.foreground':      palette.primaryMid,
-    'peekViewTitleLabel.foreground':            palette.primaryBright,
-
-    // ── Minimap ────────────────────────────────────────────
-    'minimap.background':            palette.bg,
-    'minimap.findMatchHighlight':    alpha(palette.primary, '60'),
-    'minimap.selectionHighlight':    alpha(palette.primary, '40'),
-    'minimap.errorHighlight':        palette.red,
-    'minimap.warningHighlight':      palette.secondary,
-    'minimapGutter.addedBackground':    palette.primaryMid,
-    'minimapGutter.modifiedBackground': palette.secondary,
-    'minimapGutter.deletedBackground':  palette.red,
-    'minimapSlider.background':         alpha(palette.border, '50'),
-    'minimapSlider.hoverBackground':    alpha(palette.border, 'b0'),
-    'minimapSlider.activeBackground':   alpha(palette.primary, '60'),
-
-    // ── Breadcrumb ─────────────────────────────────────────
-    'breadcrumb.background':                palette.secondary,
-    'breadcrumb.foreground':                palette.black,
-    'breadcrumb.focusForeground':           palette.primaryWhite,
-    'breadcrumb.activeSelectionForeground': palette.white,
-    'breadcrumbPicker.background':          palette.bgLighter,
-
-    // ── Git Decorations ────────────────────────────────────
-    'gitDecoration.addedResourceForeground':         palette.primaryMid,
-    'gitDecoration.modifiedResourceForeground':      palette.secondary,
-    'gitDecoration.deletedResourceForeground':       palette.red,
-    'gitDecoration.untrackedResourceForeground':     palette.primaryBright,
-    'gitDecoration.ignoredResourceForeground':       palette.primaryFaint,
-    'gitDecoration.conflictingResourceForeground':   palette.secondaryBright,
-    'gitDecoration.stageModifiedResourceForeground': palette.secondary,
-    'gitDecoration.stageDeletedResourceForeground':  palette.redDim,
-    'gitDecoration.submoduleResourceForeground':     palette.primaryMid,
-
-    // ── Command Palette / Quick Input ──────────────────────
-    'quickInput.background':             palette.bg,
-    'quickInput.foreground':             palette.primary,
-    'quickInputList.focusBackground':    alpha(palette.primary, '30'),
-    'quickInputTitle.background':        palette.bg,
-
-    // ── Settings ───────────────────────────────────────────
-    'settings.headerForeground':        palette.primaryBright,
-    'settings.modifiedItemIndicator':   palette.secondary,
-    'settings.focusedRowBackground':    alpha(palette.primary, '20'),
-    'settings.focusedRowBorder':        palette.primaryDim,
-
-    // ── Welcome Page ───────────────────────────────────────
-    'welcomePage.tileBackground':              palette.bg,
-    'welcomePage.tileBorder':                  palette.border,
-    'welcomePage.progress.foreground':         palette.primary,
-    'walkThrough.embeddedEditorBackground':    alpha(palette.black, '50'),
-
-    // ── Debug ──────────────────────────────────────────────
-    'debugToolBar.background':           palette.bg,
-    'debugToolBar.border':               palette.border,
-    'debugIcon.breakpointForeground':    palette.red,
-    'debugIcon.startForeground':         palette.primaryBright,
-    'debugIcon.pauseForeground':         palette.secondary,
-    'debugIcon.stopForeground':          palette.red,
-    'debugConsole.infoForeground':       palette.primary,
-    'debugConsole.warningForeground':    palette.secondary,
-    'debugConsole.errorForeground':      palette.red,
-    'debugExceptionWidget.background':   alpha(palette.redDim, '40'),
-    'debugExceptionWidget.border':       palette.red,
-
-    // ── Testing ────────────────────────────────────────────
-    'testing.iconPassed':  palette.primaryBright,
-    'testing.iconFailed':  palette.red,
-    'testing.iconErrored': palette.red,
-    'testing.iconQueued':  palette.primaryGhost,
-    'testing.iconSkipped': palette.primaryDim,
-    'testing.iconUnset':   palette.primaryGhost,
-  },
-
-  tokenColors: [
-    // ════════════════════════════════════════════════════════
-    // GENERAL / UNIVERSAL RULES
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Comments',
-      scope: ['comment', 'punctuation.definition.comment', 'string.quoted.docstring', 'string.quoted.docstring punctuation.definition.string.begin', 'string.quoted.docstring punctuation.definition.string.end'],
-      settings: { foreground: tokens.comment },
-    },
-    {
-      name: 'Comment Markup Link',
-      scope: ['comment markup.link'],
-      settings: { foreground: tokens.gray },
-    },
-    {
-      name: 'Keywords',
-      scope: ['keyword'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'Keyword Control',
-      scope: ['keyword.control'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'Storage',
-      scope: ['storage'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'Operators',
-      scope: ['keyword.operator'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Variables',
-      scope: ['variable'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Language Variables',
-      scope: ['variable.language'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Namespaces',
-      scope: ['entity.name.namespace'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Functions',
-      scope: [
-        'entity.name.function',
-        'meta.require',
-        'support.function.any-method',
-        'variable.function',
-      ],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Methods',
-      scope: ['keyword.other.special-method'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Support Function',
-      scope: ['support.function'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Classes',
-      scope: ['support.class', 'entity.name.type.class'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Class Name',
-      scope: [
-        'entity.name.class',
-        'variable.other.class.js',
-        'variable.other.class.ts',
-      ],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Class Name (namespace type)',
-      scope: ['entity.name.type.namespace'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Class Name (identifier)',
-      scope: ['entity.name.class.identifier.namespace.type'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Type Name',
-      scope: ['entity.name.type'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Strings',
-      scope: ['string'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'Punctuation Definition String',
-      scope: ['punctuation.definition.string.begin', 'punctuation.definition.string.end'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'Integers',
-      scope: ['constant.numeric'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Constants',
-      scope: ['constant'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Punctuation Definition Constant',
-      scope: ['punctuation.definition.constant'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Tags',
-      scope: ['entity.name.tag'],
-      settings: { foreground: tokens.tag },
-    },
-    {
-      name: 'Attributes',
-      scope: ['entity.other.attribute-name'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Attribute IDs',
-      scope: ['entity.other.attribute-name.id'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Attribute Class',
-      scope: ['entity.other.attribute-name.class.css'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Selector',
-      scope: ['meta.selector'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'Inherited Class',
-      scope: ['entity.other.inherited-class'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Constant Other Symbol',
-      scope: ['constant.other.symbol'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Text (function parameter)',
-      scope: ['variable.parameter.function'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Support Type (property name)',
-      scope: ['support.type.property-name'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Support Constant (property value)',
-      scope: ['support.constant.property-value'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Support Constant (font name)',
-      scope: ['support.constant.font-name'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Meta Tag',
-      scope: ['meta.tag'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Headings',
-      scope: ['markup.heading'],
-      settings: { foreground: tokens.heading, fontStyle: 'bold' },
-    },
-    {
-      name: 'Headings (punctuation / section)',
-      scope: ['markup.heading punctuation.definition.heading', 'entity.name.section'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Units',
-      scope: ['keyword.other.unit'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Bold',
-      scope: ['markup.bold', 'todo.bold'],
-      settings: { foreground: tokens.number, fontStyle: 'bold' },
-    },
-    {
-      name: 'Bold (punctuation)',
-      scope: ['punctuation.definition.bold'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Markup Italic',
-      scope: ['markup.italic', 'punctuation.definition.italic', 'todo.emphasis'],
-      settings: { foreground: tokens.keyword, fontStyle: '' },
-    },
-    {
-      name: 'Emphasis',
-      scope: ['emphasis md'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Markup Inserted',
-      scope: ['markup.inserted'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'Markup Deleted',
-      scope: ['markup.deleted'],
-      settings: { foreground: tokens.invalid },
-    },
-    {
-      name: 'Markup Changed',
-      scope: ['markup.changed'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Regular Expressions',
-      scope: ['string.regexp'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Escape Characters',
-      scope: ['constant.character.escape'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'URL',
-      scope: ['*url*', '*link*', '*uri*'],
-      settings: { fontStyle: 'underline' },
-    },
-    {
-      name: 'Invalid (illegal)',
-      scope: ['invalid.illegal'],
-      settings: { foreground: palette.white },
-    },
-    {
-      name: 'Invalid (illegal bad ampersand)',
-      scope: ['invalid.illegal.bad-ampersand.html'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Invalid (broken)',
-      scope: ['invalid.broken'],
-      settings: { foreground: palette.white },
-    },
-    {
-      name: 'Invalid (deprecated)',
-      scope: ['invalid.deprecated'],
-      settings: { foreground: palette.white },
-    },
-    {
-      name: 'Invalid (unimplemented)',
-      scope: ['invalid.unimplemented'],
-      settings: { foreground: palette.white },
-    },
-    {
-      name: 'Embedded',
-      scope: ['punctuation.section.embedded', 'variable.interpolation'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Embedded (begin/end)',
-      scope: ['punctuation.section.embedded.begin', 'punctuation.section.embedded.end'],
-      settings: { foreground: tokens.keyword },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // DIFF
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Markup Diff Changed',
-      scope: ['markup.changed.diff'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Diff Header',
-      scope: [
-        'meta.diff.header.from-file',
-        'meta.diff.header.to-file',
-        'punctuation.definition.from-file.diff',
-        'punctuation.definition.to-file.diff',
-      ],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Diff Inserted',
-      scope: ['markup.inserted.diff'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'Diff Deleted',
-      scope: ['markup.deleted.diff'],
-      settings: { foreground: tokens.variable },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // REGEXP
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Regexp Constant Character-Class',
-      scope: ['constant.other.character-class.regexp'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Regexp Operator Quantifier',
-      scope: ['keyword.operator.quantifier.regexp'],
-      settings: { foreground: tokens.number },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // OPERATORS (specific)
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Operator Logical',
-      scope: ['keyword.operator.logical'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Operator Bitwise',
-      scope: ['keyword.operator.bitwise'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Operator Channel',
-      scope: ['keyword.operator.channel'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Operator Arithmetic / Comparison / Increment',
-      scope: [
-        'keyword.operator.arithmetic',
-        'keyword.operator.comparison',
-        'keyword.operator.decrement',
-        'keyword.operator.increment',
-        'keyword.operator.relational',
-      ],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Compound Assignment Operators',
-      scope: ['keyword.operator.assignment.compound'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Operator Assignment',
-      scope: ['keyword.operator.assignment'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Operator Delete',
-      scope: ['keyword.operator.delete'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Punctuation Separator Delimiter',
-      scope: ['punctuation.separator.delimiter'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Control Elements',
-      scope: ['control.elements', 'keyword.operator.less'],
-      settings: { foreground: tokens.number },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // STRING INTERPOLATION / TEMPLATES
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'String Interpolation',
-      scope: [
-        'punctuation.definition.template-expression.begin',
-        'punctuation.definition.template-expression.end',
-        'punctuation.section.embedded',
-      ],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Reset JS String Interpolation Expression',
-      scope: ['meta.template.expression'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Import Module JS',
-      scope: ['keyword.operator.module'],
-      settings: { foreground: tokens.keyword },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // JAVASCRIPT / TYPESCRIPT
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'js/ts Punctuation Separator Key-Value',
-      scope: ['punctuation.separator.key-value'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'js/ts Import Keyword',
-      scope: ['keyword.operator.expression.import'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'js/ts Math',
-      scope: ['support.constant.math'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'js/ts Math Property',
-      scope: ['support.constant.property.math'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'js/ts variable.other.constant',
-      scope: ['variable.other.constant'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'js/ts Module',
-      scope: ['support.module.node', 'support.type.object.module', 'support.module.node'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'js/ts entity.name.type.module',
-      scope: ['entity.name.type.module'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'js Variable Readwrite',
-      scope: [
-        'variable.other.readwrite',
-        'meta.object-literal.key',
-        'support.variable.property',
-        'support.variable.object.process',
-        'support.variable.object.node',
-      ],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'js/ts JSON',
-      scope: ['support.constant.json'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'js/ts Keyword (instanceof, new, ternary, optional, keyof)',
-      scope: [
-        'keyword.operator.expression.instanceof',
-        'keyword.operator.new',
-        'keyword.operator.ternary',
-        'keyword.operator.optional',
-        'keyword.operator.expression.keyof',
-      ],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'js/ts Console',
-      scope: ['support.type.object.console'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'js/ts support.variable.property.process',
-      scope: ['support.variable.property.process'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'js Console Function',
-      scope: ['entity.name.function', 'support.function.console'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'js/ts Keyword Operators (delete, in, of, instanceof, new, typeof, void)',
-      scope: [
-        'keyword.operator.expression.delete',
-        'keyword.operator.expression.in',
-        'keyword.operator.expression.of',
-        'keyword.operator.expression.instanceof',
-        'keyword.operator.new',
-        'keyword.operator.expression.typeof',
-        'keyword.operator.expression.void',
-      ],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'js/ts Compound Assignment',
-      scope: [
-        'keyword.operator.assignment.compound.js',
-        'keyword.operator.assignment.compound.ts',
-      ],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'js DOM',
-      scope: ['support.type.object.dom'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'js DOM Variable',
-      scope: ['support.variable.dom', 'support.variable.property.dom'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'js Flowtype',
-      scope: ['support.type.type.flowtype'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'js Flow Primitive',
-      scope: ['support.type.primitive'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'js Class Prop',
-      scope: ['meta.property.object'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'js Func Parameter',
-      scope: ['variable.parameter.function.js'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'js Template Literals Begin',
-      scope: ['keyword.other.template.begin'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'js Template Literals End',
-      scope: ['keyword.other.template.end'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'js Template Literals Variable Braces Begin',
-      scope: ['keyword.other.substitution.begin'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'js Template Literals Variable Braces End',
-      scope: ['keyword.other.substitution.end'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'js/ts Bold (attributes, super)',
-      scope: [
-        'entity.other.attribute-name.js',
-        'entity.other.attribute-name.ts',
-        'entity.other.attribute-name.jsx',
-        'entity.other.attribute-name.tsx',
-        'variable.language.super',
-      ],
-      settings: { },
-    },
-    {
-      name: 'Parameter Function js/ts',
-      scope: ['function.parameter'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Brace Function',
-      scope: ['function.brace'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Storage JS TS',
-      scope: ['token.storage'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'Block Scope',
-      scope: ['block.scope.end', 'block.scope.begin'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'ts Primitive/Builtin Types',
-      scope: [
-        'support.type.primitive.ts',
-        'support.type.builtin.ts',
-        'support.type.primitive.tsx',
-        'support.type.builtin.tsx',
-      ],
-      settings: { foreground: tokens.class },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // JAVA
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Java Type',
-      scope: ['storage.type.annotation.java', 'storage.type.object.array.java'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Java Source',
-      scope: ['source.java'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Java Punctuation',
-      scope: [
-        'punctuation.section.block.begin.java',
-        'punctuation.section.block.end.java',
-        'punctuation.definition.method-parameters.begin.java',
-        'punctuation.definition.method-parameters.end.java',
-        'meta.method.identifier.java',
-        'punctuation.section.method.begin.java',
-        'punctuation.section.method.end.java',
-        'punctuation.terminator.java',
-        'punctuation.section.class.begin.java',
-        'punctuation.section.class.end.java',
-        'punctuation.section.inner-class.begin.java',
-        'punctuation.section.inner-class.end.java',
-        'meta.method-call.java',
-        'punctuation.section.class.begin.bracket.curly.java',
-        'punctuation.section.class.end.bracket.curly.java',
-        'punctuation.section.method.begin.bracket.curly.java',
-        'punctuation.section.method.end.bracket.curly.java',
-        'punctuation.separator.period.java',
-        'punctuation.bracket.angle.java',
-        'punctuation.definition.annotation.java',
-        'meta.method.body.java',
-      ],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Java Method',
-      scope: ['meta.method.java'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Java Storage Modifier / Type',
-      scope: ['storage.modifier.import.java', 'storage.type.java', 'storage.type.generic.java'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Java instanceof',
-      scope: ['keyword.operator.instanceof.java'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'Java Variable Name',
-      scope: ['meta.definition.variable.name.java'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Java Variables',
-      scope: ['token.variable.parameter.java'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Java Imports',
-      scope: ['import.storage.java'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Java Packages Keyword',
-      scope: ['token.package.keyword'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Java Packages',
-      scope: ['token.package'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Java Storage',
-      scope: ['token.storage.type.java'],
-      settings: { foreground: tokens.class },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // C / C++ / C#
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'C/C++ Function',
-      scope: ['meta.function.c', 'meta.function.cpp'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'C/C++ Block Punctuation',
-      scope: [
-        'punctuation.section.block.begin.bracket.curly.cpp',
-        'punctuation.section.block.end.bracket.curly.cpp',
-        'punctuation.terminator.statement.c',
-        'punctuation.section.block.begin.bracket.curly.c',
-        'punctuation.section.block.end.bracket.curly.c',
-        'punctuation.section.parens.begin.bracket.round.c',
-        'punctuation.section.parens.end.bracket.round.c',
-        'punctuation.section.parameters.begin.bracket.round.c',
-        'punctuation.section.parameters.end.bracket.round.c',
-      ],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'C Operator Assignment / Comparison',
-      scope: [
-        'keyword.operator.assignment.c',
-        'keyword.operator.comparison.c',
-        'keyword.operator.c',
-        'keyword.operator.increment.c',
-        'keyword.operator.decrement.c',
-        'keyword.operator.bitwise.shift.c',
-        'keyword.operator.assignment.cpp',
-        'keyword.operator.comparison.cpp',
-        'keyword.operator.cpp',
-        'keyword.operator.increment.cpp',
-        'keyword.operator.decrement.cpp',
-        'keyword.operator.bitwise.shift.cpp',
-      ],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'C/C++ Punctuation Separator',
-      scope: ['punctuation.separator.c', 'punctuation.separator.cpp'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'C Type POSIX-Reserved',
-      scope: ['support.type.posix-reserved.c', 'support.type.posix-reserved.cpp'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'C sizeof',
-      scope: ['keyword.operator.sizeof.c', 'keyword.operator.sizeof.cpp'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'C#/C++ Scope Resolution',
-      scope: [
-        'entity.name.label.cs',
-        'entity.name.scope-resolution.function.call',
-        'entity.name.scope-resolution.function.definition',
-      ],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'C# Storage Type',
-      scope: ['storage.type.cs'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'C# Local Variable',
-      scope: ['entity.name.variable.local.cs'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Variables (C)',
-      scope: ['variable.c'],
-      settings: { foreground: palette.primary },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // PYTHON
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Python Magic Variable',
-      scope: ['support.variable.magic.python'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Python Separator / Punctuation',
-      scope: [
-        'punctuation.separator.period.python',
-        'punctuation.separator.element.python',
-        'punctuation.parenthesis.begin.python',
-        'punctuation.parenthesis.end.python',
-      ],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Python Self',
-      scope: ['variable.parameter.function.language.special.self.python'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Python Parameter',
-      scope: ['variable.parameter.function.language.python'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Python Type',
-      scope: ['support.type.python'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Python Logical',
-      scope: ['keyword.operator.logical.python'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Python Variable Parameter',
-      scope: ['variable.parameter.function.python'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Python Block Punctuation',
-      scope: [
-        'punctuation.definition.arguments.begin.python',
-        'punctuation.definition.arguments.end.python',
-        'punctuation.separator.arguments.python',
-        'punctuation.definition.list.begin.python',
-        'punctuation.definition.list.end.python',
-      ],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Python Function Call Generic',
-      scope: ['meta.function-call.generic.python'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Python Placeholder',
-      scope: ['constant.character.format.placeholder.other.python'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Python Function Decorator @',
-      scope: ['meta.function.decorator.python'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Python Function Decorator Support',
-      scope: ['support.token.decorator.python', 'meta.function.decorator.identifier.python'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Python Keyword Control',
-      scope: ['keyword.control.import.python', 'keyword.control.flow.python'],
-      settings: { fontStyle: 'bold' },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // RUST
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Rust Storage Modifier Lifetime',
-      scope: ['storage.modifier.lifetime.rust'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Rust Support Function',
-      scope: ['support.function.std.rust'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Rust Entity Name Lifetime',
-      scope: ['entity.name.lifetime.rust'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Rust Variable Language',
-      scope: ['variable.language.rust'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Rust Keyword Operator Misc',
-      scope: ['keyword.operator.misc.rust'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Rust Keyword Operator Sigil',
-      scope: ['keyword.operator.sigil.rust'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Rust Support Constant Core',
-      scope: ['support.constant.core.rust'],
-      settings: { foreground: tokens.number },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // GO
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Go Operator Assignment',
-      scope: ['keyword.operator.assignment.go'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Go Operator Arithmetic / Address',
-      scope: ['keyword.operator.arithmetic.go', 'keyword.operator.address.go'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Go Package Name',
-      scope: ['entity.name.package.go'],
-      settings: { foreground: tokens.class },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // PHP
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'PHP Use Statement',
-      scope: [
-        'support.other.namespace.use.php',
-        'support.other.namespace.use-as.php',
-        'support.other.namespace.php',
-        'entity.other.alias.php',
-        'meta.interface.php',
-      ],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'PHP Error Suppression',
-      scope: ['keyword.operator.error-control.php'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'PHP instanceof',
-      scope: ['keyword.operator.type.php'],
-      settings: { foreground: tokens.keyword, fontStyle: 'bold' },
-    },
-    {
-      name: 'PHP Array Punctuation',
-      scope: ['punctuation.section.array.begin.php', 'punctuation.section.array.end.php'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'PHP Illegal Non-Null Typehinted',
-      scope: ['invalid.illegal.non-null-typehinted.php'],
-      settings: { foreground: palette.redBright },
-    },
-    {
-      name: 'PHP Types',
-      scope: [
-        'storage.type.php',
-        'meta.other.type.phpdoc.php',
-        'keyword.other.type.php',
-        'keyword.other.array.phpdoc.php',
-      ],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'PHP Call Function',
-      scope: [
-        'meta.function-call.php',
-        'meta.function-call.object.php',
-        'meta.function-call.static.php',
-      ],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'PHP Function Resets (punctuation)',
-      scope: [
-        'punctuation.definition.parameters.begin.bracket.round.php',
-        'punctuation.definition.parameters.end.bracket.round.php',
-        'punctuation.separator.delimiter.php',
-        'punctuation.section.scope.begin.php',
-        'punctuation.section.scope.end.php',
-        'punctuation.terminator.expression.php',
-        'punctuation.definition.arguments.begin.bracket.round.php',
-        'punctuation.definition.arguments.end.bracket.round.php',
-        'punctuation.definition.storage-type.begin.bracket.round.php',
-        'punctuation.definition.storage-type.end.bracket.round.php',
-        'punctuation.definition.array.begin.bracket.round.php',
-        'punctuation.definition.array.end.bracket.round.php',
-        'punctuation.definition.begin.bracket.round.php',
-        'punctuation.definition.end.bracket.round.php',
-        'punctuation.definition.begin.bracket.curly.php',
-        'punctuation.definition.end.bracket.curly.php',
-        'punctuation.definition.section.switch-block.end.bracket.curly.php',
-        'punctuation.definition.section.switch-block.start.bracket.curly.php',
-        'punctuation.definition.section.switch-block.begin.bracket.curly.php',
-        'punctuation.definition.section.switch-block.end.bracket.curly.php',
-      ],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'PHP Support Constants',
-      scope: [
-        'support.constant.ext.php',
-        'support.constant.std.php',
-        'support.constant.core.php',
-        'support.constant.parser-token.php',
-      ],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'PHP Goto',
-      scope: ['entity.name.goto-label.php', 'support.other.php'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'PHP Logical / Bitwise / Arithmetic Operator',
-      scope: [
-        'keyword.operator.logical.php',
-        'keyword.operator.bitwise.php',
-        'keyword.operator.arithmetic.php',
-      ],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'PHP Regexp Operator',
-      scope: ['keyword.operator.regexp.php'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'PHP Comparison',
-      scope: ['keyword.operator.comparison.php'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'PHP Heredoc / Nowdoc',
-      scope: ['keyword.operator.heredoc.php', 'keyword.operator.nowdoc.php'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'PHP Class Name',
-      scope: ['variable.other.class.php'],
-      settings: { foreground: tokens.variable },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // CSS / SCSS / LESS / SASS
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'CSS/SCSS Property Value',
-      scope: ['support.constant.property-value.scss', 'support.constant.property-value.css'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'CSS/SCSS/LESS Operators',
-      scope: ['keyword.operator.css', 'keyword.operator.scss', 'keyword.operator.less'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'CSS Color Standard Name',
-      scope: [
-        'support.constant.color.w3c-standard-color-name.css',
-        'support.constant.color.w3c-standard-color-name.scss',
-      ],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'CSS Comma',
-      scope: ['punctuation.separator.list.comma.css'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'CSS Vendored Property Name',
-      scope: ['support.type.vendored.property-name.css'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'CSS Property Name',
-      scope: [
-        'source.css support.type.property-name',
-        'source.sass support.type.property-name',
-        'source.scss support.type.property-name',
-        'source.less support.type.property-name',
-        'source.stylus support.type.property-name',
-        'source.postcss support.type.property-name',
-      ],
-      settings: { foreground: tokens.type },
-    },
-    {
-      name: 'CSS Pseudo-Elements / Pseudo-Classes',
-      scope: [
-        'entity.other.attribute-name.pseudo-element',
-        'entity.other.attribute-name.pseudo-class',
-      ],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Sass Selector',
-      scope: ['selector.sass'],
-      settings: { foreground: tokens.variable },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // HTML / PUG
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'HTML/Pug Escaped Characters and Entities',
-      scope: ['constant.character.entity'],
-      settings: { foreground: tokens.variable },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // RUBY
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Parameter Function Ruby/CS',
-      scope: ['function.parameter.ruby', 'function.parameter.cs'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Ruby Symbol',
-      scope: ['constant.language.symbol.ruby'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'RGB Value',
-      scope: ['rgb-value'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'RGB Value (inline)',
-      scope: ['inline-color-decoration rgb-value'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'RGB Value (less)',
-      scope: ['less rgb-value'],
-      settings: { foreground: tokens.number },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // HASKELL
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Haskell Variable Generic-Type',
-      scope: ['variable.other.generic-type.haskell'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Haskell Storage Type',
-      scope: ['storage.type.haskell'],
-      settings: { foreground: tokens.number },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // UNISON
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Unison Punctuation',
-      scope: [
-        'punctuation.definition.delayed.unison',
-        'punctuation.definition.list.begin.unison',
-        'punctuation.definition.list.end.unison',
-        'punctuation.definition.ability.begin.unison',
-        'punctuation.definition.ability.end.unison',
-        'punctuation.operator.assignment.as.unison',
-        'punctuation.separator.pipe.unison',
-        'punctuation.separator.delimiter.unison',
-        'punctuation.definition.hash.unison',
-      ],
-      settings: { foreground: tokens.variable },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // EDGE
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Support Constant Edge',
-      scope: ['support.constant.edge'],
-      settings: { foreground: tokens.keyword },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // ELM
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Elm Prelude',
-      scope: ['support.type.prelude.elm'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Elm Constant',
-      scope: ['support.constant.elm'],
-      settings: { foreground: tokens.number },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // CLOJURE
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Clojure Globals',
-      scope: ['entity.global.clojure'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Clojure Symbols',
-      scope: ['meta.symbol.clojure'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Clojure Constants',
-      scope: ['constant.keyword.clojure'],
-      settings: { foreground: tokens.builtin },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // COFFEESCRIPT
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'CoffeeScript Function Argument',
-      scope: ['meta.arguments.coffee', 'variable.parameter.function.coffee'],
-      settings: { foreground: tokens.variable },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // INI / MAKEFILE / GROOVY
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Ini Default Text',
-      scope: ['source.ini'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'Makefile Prerequisites',
-      scope: ['meta.scope.prerequisites.makefile'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Makefile Text Colour',
-      scope: ['source.makefile'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Groovy Import Names',
-      scope: ['storage.modifier.import.groovy'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Groovy Methods',
-      scope: ['meta.method.groovy'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Groovy Variables',
-      scope: ['meta.definition.variable.name.groovy'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Groovy Inheritance',
-      scope: ['meta.definition.class.inherited.classes.groovy'],
-      settings: { foreground: tokens.string },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // HLSL
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'HLSL Semantic',
-      scope: ['support.variable.semantic.hlsl'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'HLSL Types',
-      scope: [
-        'support.type.texture.hlsl',
-        'support.type.sampler.hlsl',
-        'support.type.object.hlsl',
-        'support.type.object.rw.hlsl',
-        'support.type.fx.hlsl',
-      ],
-      settings: { foreground: tokens.keyword },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // SQL
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'SQL Variables',
-      scope: ['text.variable', 'text.bracketed'],
-      settings: { foreground: tokens.variable },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // SWIFT / VB
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Types (Swift, VB)',
-      scope: ['support.type.swift', 'support.type.vb.asp'],
-      settings: { foreground: tokens.class },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // LARAVEL BLADE
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Laravel Blade Tag',
-      scope: ['text.html.laravel-blade source.php.embedded.line.html entity.name.tag.laravel-blade'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Laravel Blade @',
-      scope: ['text.html.laravel-blade source.php.embedded.line.html support.constant.laravel-blade'],
-      settings: { foreground: tokens.keyword },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // XI LANGUAGE
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Xi Heading 1 / Keyword',
-      scope: ['entity.name.function.xi'],
-      settings: { foreground: tokens.class },
-    },
-    {
-      name: 'Xi Heading 2 / Callable',
-      scope: ['entity.name.class.xi'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Xi Heading 3 / Property',
-      scope: ['constant.character.character-class.regexp.xi'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Xi Heading 4 / Type',
-      scope: ['constant.regexp.xi'],
-      settings: { foreground: tokens.keyword },
-    },
-    {
-      name: 'Xi Heading 5 / Enum / Preprocessor',
-      scope: ['keyword.control.xi'],
-      settings: { foreground: tokens.builtin },
-    },
-    {
-      name: 'Xi Heading 6 / Number',
-      scope: ['invalid.xi'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Xi String',
-      scope: ['beginning.punctuation.definition.quote.markdown.xi'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'Xi Comments',
-      scope: ['beginning.punctuation.definition.list.markdown.xi'],
-      settings: { foreground: tokens.gray },
-    },
-    {
-      name: 'Xi Link',
-      scope: ['constant.character.xi'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Xi Accent',
-      scope: ['accent.xi'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Xi Wikiword',
-      scope: ['wikiword.xi'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Xi Language Operators',
-      scope: ['constant.other.color.rgb-value.xi'],
-      settings: { foreground: palette.white },
-    },
-    {
-      name: 'Xi Elements to Dim',
-      scope: ['punctuation.definition.tag.xi'],
-      settings: { foreground: tokens.gray },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // ELIXIR
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Elixir Symbol',
-      scope: ['constant.language.symbol.elixir'],
-      settings: { foreground: tokens.builtin },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // TEMPLATE LITERALS
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Template Literal (quasi)',
-      scope: ['punctuation.quasi.element'],
-      settings: { foreground: tokens.keyword },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // JSON
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'JSON Property Name',
-      scope: ['support.type.property-name.json'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'JSON Property Name Punctuation',
-      scope: ['support.type.property-name.json punctuation'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'JSON Quoted Key',
-      scope: ['source.json meta.structure.dictionary.json > string.quoted.json'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'JSON Quoted Key Punctuation',
-      scope: ['source.json meta.structure.dictionary.json > string.quoted.json > punctuation.string'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'JSON Value Strings',
-      scope: [
-        'source.json meta.structure.dictionary.json > value.json > string.quoted.json',
-        'source.json meta.structure.array.json > value.json > string.quoted.json',
-        'source.json meta.structure.dictionary.json > value.json > string.quoted.json > punctuation',
-        'source.json meta.structure.array.json > value.json > string.quoted.json > punctuation',
-      ],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'JSON Constants',
-      scope: [
-        'source.json meta.structure.dictionary.json > constant.language.json',
-        'source.json meta.structure.array.json > constant.language.json',
-      ],
-      settings: { foreground: tokens.builtin },
-    },
-    // JSON Key Levels — graduated color per nesting depth
-    {
-      name: 'JSON Key - Level 0',
-      scope: ['source.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.primaryBright },
-    },
-    {
-      name: 'JSON Key - Level 1',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'JSON Key - Level 2',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.secondary },
-    },
-    {
-      name: 'JSON Key - Level 3',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.primaryWhite },
-    },
-    {
-      name: 'JSON Key - Level 4',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.primaryMid },
-    },
-    {
-      name: 'JSON Key - Level 5',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.secondaryBright },
-    },
-    {
-      name: 'JSON Key - Level 6',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.primaryDim },
-    },
-    {
-      name: 'JSON Key - Level 7',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.primaryBright },
-    },
-    {
-      name: 'JSON Key - Level 8',
-      scope: ['source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json'],
-      settings: { foreground: palette.primary },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // YAML
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'YAML Key',
-      scope: ['entity.name.tag.yaml'],
-      settings: { foreground: palette.secondary, fontStyle: 'bold' },
-    },
-    {
-      name: 'YAML Key-Value Separator',
-      scope: ['punctuation.separator.key-value.mapping.yaml'],
-      settings: { foreground: palette.primaryDim },
-    },
-    {
-      name: 'YAML String Value (unquoted)',
-      scope: ['string.unquoted.plain.out.yaml', 'string.unquoted.plain.in.yaml', 'string.unquoted.block.yaml'],
-      settings: { foreground: palette.primaryBright },
-    },
-    {
-      name: 'YAML String Value (quoted)',
-      scope: ['string.quoted.single.yaml', 'string.quoted.double.yaml'],
-      settings: { foreground: palette.primaryBright },
-    },
-    {
-      name: 'YAML Boolean',
-      scope: ['constant.language.boolean.yaml'],
-      settings: { foreground: palette.secondaryBright, fontStyle: 'bold' },
-    },
-    {
-      name: 'YAML Null',
-      scope: ['constant.language.null.yaml'],
-      settings: { foreground: palette.primaryMid, fontStyle: 'bold italic' },
-    },
-    {
-      name: 'YAML Block Sequence Item',
-      scope: ['punctuation.definition.block.sequence.item.yaml'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'YAML Flow Indicators (braces/brackets)',
-      scope: [
-        'punctuation.definition.mapping.begin.yaml',
-        'punctuation.definition.mapping.end.yaml',
-        'punctuation.definition.sequence.begin.yaml',
-        'punctuation.definition.sequence.end.yaml',
-        'punctuation.separator.sequence.yaml',
-      ],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'YAML Anchor',
-      scope: ['entity.name.type.anchor.yaml', 'punctuation.definition.anchor.yaml'],
-      settings: { foreground: palette.secondaryBright, fontStyle: 'bold' },
-    },
-    {
-      name: 'YAML Alias',
-      scope: ['variable.other.alias.yaml', 'punctuation.definition.alias.yaml'],
-      settings: { foreground: palette.secondaryBright, fontStyle: 'italic' },
-    },
-    {
-      name: 'YAML Document Markers',
-      scope: ['entity.other.document.begin.yaml', 'entity.other.document.end.yaml'],
-      settings: { foreground: palette.primaryWhite, fontStyle: 'bold' },
-    },
-    {
-      name: 'YAML Tag Handle',
-      scope: ['storage.type.tag-handle.yaml', 'constant.other.tag.yaml'],
-      settings: { foreground: palette.primaryMid },
-    },
-    {
-      name: 'YAML Block Scalar Indicators',
-      scope: [
-        'keyword.control.flow.block-scalar.literal.yaml',
-        'keyword.control.flow.block-scalar.folded.yaml',
-        'storage.modifier.chomping-indicator.yaml',
-      ],
-      settings: { foreground: palette.primary, fontStyle: 'bold' },
-    },
-    {
-      name: 'YAML Directive',
-      scope: ['keyword.other.directive.yaml', 'punctuation.definition.directive.begin.yaml'],
-      settings: { foreground: palette.primaryMid, fontStyle: 'bold' },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // MARKDOWN
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Markdown Headings',
-      scope: ['entity.name.section.markdown'],
-      settings: { foreground: tokens.heading, fontStyle: 'bold' },
-    },
-    {
-      name: 'Markdown Heading Punctuation',
-      scope: ['punctuation.definition.heading.markdown'],
-      settings: { foreground: tokens.heading, fontStyle: 'bold' },
-    },
-    {
-      name: 'Markdown List Punctuation',
-      scope: [
-        'punctuation.definition.list.begin.markdown',
-        'punctuation.definition.list.markdown',
-        'beginning.punctuation.definition.list.markdown',
-      ],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Markdown Heading Setext',
-      scope: ['markup.heading.setext'],
-      settings: { foreground: palette.primary, fontStyle: 'bold' },
-    },
-    {
-      name: 'Markdown Underscore-Style Headers',
-      scope: ['markup.heading.setext.1.markdown', 'markup.heading.setext.2.markdown'],
-      settings: { foreground: tokens.heading, fontStyle: 'bold' },
-    },
-    {
-      name: 'Markdown Bold Punctuation',
-      scope: ['punctuation.definition.bold.markdown'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Markdown Inline Raw',
-      scope: ['markup.inline.raw.markdown', 'markup.inline.raw.string.markdown'],
-      settings: { foreground: tokens.string },
-    },
-    {
-      name: 'Markdown Punctuation Definition String',
-      scope: [
-        'punctuation.definition.string.begin.markdown',
-        'punctuation.definition.string.end.markdown',
-        'punctuation.definition.metadata.markdown',
-      ],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Markdown Underline Link/Image',
-      scope: ['markup.underline.link.markdown', 'markup.underline.link.image.markdown'],
-      settings: { foreground: tokens.keyword, fontStyle: 'underline' },
-    },
-    {
-      name: 'Markdown Link Title/Description',
-      scope: ['string.other.link.title.markdown', 'string.other.link.description.markdown'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Markdown Quote',
-      scope: ['markup.quote.markdown'],
-      settings: { foreground: tokens.gray },
-    },
-    {
-      name: 'Markdown Plain',
-      scope: ['text.html.markdown', 'punctuation.definition.list_item.markdown'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Markdown Markup Raw Inline Punctuation',
-      scope: ['text.html.markdown markup.inline.raw.markdown punctuation.definition.raw.markdown'],
-      settings: { foreground: tokens.gray },
-    },
-    {
-      name: 'Markdown Blockquote Punctuation',
-      scope: ['markup.quote punctuation.definition.blockquote.markdown'],
-      settings: { foreground: tokens.gray },
-    },
-    {
-      name: 'Markdown Link Anchor',
-      scope: ['constant.other.reference.link.markdown'],
-      settings: { foreground: tokens.linkAnchor },
-    },
-    {
-      name: 'Markup Raw Block',
-      scope: ['markup.raw.block'],
-      settings: { foreground: palette.primaryMid },
-    },
-    {
-      name: 'Markdown Raw Block Fenced',
-      scope: ['markup.raw.block.fenced.markdown'],
-      settings: { foreground: palette.primaryFaint },
-    },
-    {
-      name: 'Markdown Fenced Code Block',
-      scope: ['punctuation.definition.fenced.markdown'],
-      settings: { foreground: palette.primaryFaint },
-    },
-    {
-      name: 'Markdown Fenced Code Block Variable',
-      scope: [
-        'markup.raw.block.fenced.markdown',
-        'variable.language.fenced.markdown',
-        'punctuation.section.class.end',
-      ],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Markdown Fenced Language',
-      scope: ['variable.language.fenced.markdown'],
-      settings: { foreground: tokens.gray },
-    },
-    {
-      name: 'Markdown Separator',
-      scope: ['meta.separator'],
-      settings: { foreground: tokens.gray },
-    },
-    {
-      name: 'Markup Table',
-      scope: ['markup.table'],
-      settings: { foreground: tokens.variable },
-    },
-    {
-      name: 'Markup Italic Markdown',
-      scope: ['markup.italic.markdown'],
-      settings: { fontStyle: '' },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // TOKEN INFO / WARN / ERROR / DEBUG
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Token Info',
-      scope: ['token.info-token'],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'Token Warn',
-      scope: ['token.warn-token'],
-      settings: { foreground: tokens.number },
-    },
-    {
-      name: 'Token Error',
-      scope: ['token.error-token'],
-      settings: { foreground: palette.redBright },
-    },
-    {
-      name: 'Token Debug',
-      scope: ['token.debug-token'],
-      settings: { foreground: tokens.keyword },
-    },
-
-    // ════════════════════════════════════════════════════════
-    // MISC
-    // ════════════════════════════════════════════════════════
-    {
-      name: 'Decorators',
-      scope: [
-        'tag.decorator.js entity.name.tag.js',
-        'tag.decorator.js punctuation.definition.tag.js',
-      ],
-      settings: { foreground: tokens.function },
-    },
-    {
-      name: 'ES7 Bind Operator',
-      scope: ['source.js constant.other.object.key.js string.unquoted.label.js'],
-      settings: { foreground: tokens.invalid },
-    },
-    {
-      name: 'Meta Brace Square',
-      scope: ['meta.brace.square'],
-      settings: { foreground: palette.primary },
-    },
-    {
-      name: 'Comment (bold style)',
-      scope: ['comment.line.double-slash', 'comment.block.documentation'],
-      settings: { },
-    },
-  ],
-};
-
-} // end buildTheme
+function buildTheme(name, p) {
+  const t = tokenMap(p);
+
+  return {
+    name,
+    type: 'dark',
+    author: 'nathanmillwater',
+    colorSpaceName: 'sRGB',
+
+    colors: {
+      // ── Activity Bar ──────────────────────────────────────
+      'activityBar.activeFocusBorder': p.yellow,
+      'activityBar.background': p.bgDeepest,
+      'activityBar.border': p.bgDeepest,
+      'activityBar.foreground': p.fgSoft,
+      'activityBar.inactiveForeground': p.fgFaint,
+      'activityBarBadge.background': p.yellow,
+      'activityBarBadge.foreground': p.bg,
+      'activityBarTop.background': p.bgDeep,
+      'activityBarTop.foreground': p.fgSoft,
+      'activityBarTop.inactiveForeground': p.fgFaint,
+
+      // ── Badge ─────────────────────────────────────────────
+      'badge.background': p.yellow,
+      'badge.foreground': p.bg,
+
+      // ── Banner ────────────────────────────────────────────
+      'banner.background': p.bgElevated,
+      'banner.foreground': p.fgSoft,
+      'banner.iconForeground': p.fgSoft,
+
+      // ── Breadcrumb ────────────────────────────────────────
+      'breadcrumb.activeSelectionForeground': p.fg,
+      'breadcrumb.focusForeground': p.fgSoft,
+      'breadcrumb.foreground': p.fgMuted,
+      'breadcrumbPicker.background': p.bg,
+
+      // ── Buttons ───────────────────────────────────────────
+      'button.background': p.bgElevated,
+      'button.foreground': p.fg,
+      'button.hoverBackground': p.bgOverlay,
+      'button.secondaryBackground': p.bgElevated,
+      'button.secondaryForeground': p.fgSoft,
+      'button.secondaryHoverBackground': p.bgOverlay,
+      'button.separator': p.bg,
+
+      // ── Charts ────────────────────────────────────────────
+      'charts.blue': p.cyan,
+      'charts.foreground': p.fg,
+      'charts.green': p.green,
+      'charts.lines': p.fgDim,
+      'charts.orange': p.orange,
+      'charts.purple': p.purple,
+      'charts.red': p.red,
+      'charts.yellow': p.yellow,
+
+      // ── Chat ──────────────────────────────────────────────
+      'chat.avatarBackground': p.bg,
+      'chat.avatarForeground': p.purple,
+      'chat.requestBackground': p.bgElevated,
+      'chat.requestBorder': p.bgOverlay,
+      'chat.slashCommandBackground': p.transparent,
+      'chat.slashCommandForeground': p.yellow,
+
+      // ── Checkbox ──────────────────────────────────────────
+      'checkbox.background': p.bgElevated,
+      'checkbox.border': p.bgOverlay,
+      'checkbox.foreground': p.yellow,
+
+      // ── Command Center ────────────────────────────────────
+      'commandCenter.activeBackground': p.bg,
+      'commandCenter.activeForeground': p.fgSoft,
+      'commandCenter.background': p.bgDeep,
+      'commandCenter.border': p.bg,
+      'commandCenter.debuggingBackground': p.bgDeep,
+      'commandCenter.foreground': p.fgMuted,
+
+      // ── Debug Console ─────────────────────────────────────
+      'debugConsole.errorForeground': p.red,
+      'debugConsole.infoForeground': p.cyan,
+      'debugConsole.sourceForeground': p.fg,
+      'debugConsole.warningForeground': p.orange,
+      'debugConsoleInputIcon.foreground': p.yellow,
+
+      // ── Debug Exception Widget ────────────────────────────
+      'debugExceptionWidget.background': p.bgElevated,
+      'debugExceptionWidget.border': p.bgDeep,
+
+      // ── Debug Icons ───────────────────────────────────────
+      'debugIcon.breakpointCurrentStackframeForeground': p.yellow,
+      'debugIcon.breakpointDisabledForeground': p.fgSoft,
+      'debugIcon.breakpointForeground': p.red,
+      'debugIcon.breakpointStackframeForeground': p.fg,
+      'debugIcon.breakpointUnverifiedForeground': p.orange,
+      'debugIcon.continueForeground': p.fg,
+      'debugIcon.disconnectForeground': p.fg,
+      'debugIcon.pauseForeground': p.fg,
+      'debugIcon.restartForeground': p.green,
+      'debugIcon.startForeground': p.green,
+      'debugIcon.stepBackForeground': p.fg,
+      'debugIcon.stepIntoForeground': p.fg,
+      'debugIcon.stepOutForeground': p.fg,
+      'debugIcon.stepOverForeground': p.fg,
+      'debugIcon.stopForeground': p.red,
+
+      // ── Debug Token Expression ────────────────────────────
+      'debugTokenExpression.boolean': p.orange,
+      'debugTokenExpression.error': p.red,
+      'debugTokenExpression.name': p.cyan,
+      'debugTokenExpression.number': p.purple,
+      'debugTokenExpression.string': p.yellow,
+      'debugTokenExpression.value': p.fg,
+
+      // ── Debug Toolbar / View ──────────────────────────────
+      'debugToolBar.background': p.bgElevated,
+      'debugView.exceptionLabelBackground': p.red,
+      'debugView.exceptionLabelForeground': p.bg,
+      'debugView.stateLabelBackground': p.green,
+      'debugView.stateLabelForeground': p.bg,
+      'debugView.valueChangedHighlight': p.yellow,
+
+      // ── General Foregrounds ───────────────────────────────
+      'descriptionForeground': p.fgMuted,
+      'disabledForeground': alpha(p.fg, '26'),
+      'errorForeground': p.red,
+      'focusBorder': p.fgDim,
+      'foreground': p.fg,
+      'icon.foreground': p.fgMuted,
+
+      // ── Diff Editor ───────────────────────────────────────
+      'diffEditor.diagonalFill': p.bgElevated,
+      'diffEditor.insertedLineBackground': alpha(p.green, '19'),
+      'diffEditor.insertedTextBackground': alpha(p.green, '19'),
+      'diffEditor.move.border': '',
+      'diffEditor.moveActive.border': '',
+      'diffEditor.removedLineBackground': alpha(p.red, '19'),
+      'diffEditor.removedTextBackground': alpha(p.red, '19'),
+      'diffEditor.unchangedCodeBackground': p.bgDeep,
+      'diffEditor.unchangedRegionBackground': p.bgDeep,
+      'diffEditor.unchangedRegionForeground': p.fgSoft,
+      'diffEditor.unchangedRegionShadow': p.bgDeepest,
+      'diffEditorGutter.insertedLineBackground': alpha(p.green, '19'),
+      'diffEditorGutter.removedLineBackground': alpha(p.red, '19'),
+      'diffEditorOverview.insertedForeground': alpha(p.green, 'a5'),
+      'diffEditorOverview.removedForeground': alpha(p.red, 'a5'),
+
+      // ── Dropdown ──────────────────────────────────────────
+      'dropdown.background': p.bgElevated,
+      'dropdown.border': p.bgOverlay,
+      'dropdown.foreground': p.fgMuted,
+      'dropdown.listBackground': p.bgElevated,
+
+      // ── Editor ────────────────────────────────────────────
+      'editor.background': p.bg,
+      'editor.findMatchBackground': alpha(p.fg, '26'),
+      'editor.findMatchBorder': p.yellow,
+      'editor.findMatchHighlightBackground': alpha(p.fg, '26'),
+      'editor.findMatchHighlightBorder': p.transparent,
+      'editor.findRangeHighlightBackground': alpha(p.fg, '0c'),
+      'editor.findRangeHighlightBorder': p.transparent,
+      'editor.focusedStackFrameHighlightBackground': alpha(p.fgSoft, '26'),
+      'editor.foldBackground': alpha(p.fg, '0c'),
+      'editor.foreground': p.fg,
+      'editor.hoverHighlightBackground': alpha(p.fg, '0c'),
+      'editor.inactiveSelectionBackground': alpha(p.fg, '0c'),
+      'editor.inlineValuesBackground': p.bgOverlay,
+      'editor.inlineValuesForeground': p.fgSoft,
+      'editor.lineHighlightBackground': alpha(p.fg, '0c'),
+      'editor.lineHighlightBorder': p.transparent,
+      'editor.linkedEditingBackground': p.bgElevated,
+      'editor.rangeHighlightBackground': p.bgElevated,
+      'editor.rangeHighlightBorder': p.bgElevated,
+      'editor.selectionBackground': alpha(p.fgSoft, '26'),
+      'editor.selectionHighlightBackground': alpha(p.fg, '26'),
+      'editor.selectionHighlightBorder': p.transparent,
+      'editor.stackFrameHighlightBackground': alpha(p.fgSoft, '26'),
+      'editor.wordHighlightBackground': alpha(p.fg, '26'),
+      'editor.wordHighlightBorder': p.transparent,
+      'editor.wordHighlightStrongBackground': alpha(p.fg, '26'),
+      'editor.wordHighlightStrongBorder': p.transparent,
+
+      // ── Editor Bracket Highlighting ───────────────────────
+      'editorBracketHighlight.foreground1': p.red,
+      'editorBracketHighlight.foreground2': p.orange,
+      'editorBracketHighlight.foreground3': p.yellow,
+      'editorBracketHighlight.foreground4': p.green,
+      'editorBracketHighlight.foreground5': p.cyan,
+      'editorBracketHighlight.foreground6': p.purple,
+      'editorBracketMatch.background': p.bg,
+      'editorBracketMatch.border': p.fgDim,
+
+      // ── Editor Code Lens / Cursor ─────────────────────────
+      'editorCodeLens.foreground': p.fgDim,
+      'editorCursor.background': p.bg,
+      'editorCursor.foreground': p.fg,
+
+      // ── Editor Errors / Warnings / Info ───────────────────
+      'editorError.background': p.transparent,
+      'editorError.border': p.transparent,
+      'editorError.foreground': p.red,
+      'editorGhostText.foreground': p.fgDim,
+      'editorWarning.background': p.transparent,
+      'editorWarning.border': p.transparent,
+      'editorWarning.foreground': p.orange,
+      'editorInfo.background': p.transparent,
+      'editorInfo.border': p.bg,
+      'editorInfo.foreground': p.cyan,
+      'editorHint.border': p.bg,
+      'editorHint.foreground': p.purple,
+
+      // ── Editor Groups ─────────────────────────────────────
+      'editorGroup.border': p.bgDeep,
+      'editorGroup.dropBackground': alpha(p.bgDeep, 'bf'),
+      'editorGroup.emptyBackground': p.bgDeepest,
+      'editorGroup.focusedEmptyBorder': p.bgDeep,
+      'editorGroupHeader.noTabsBackground': p.bg,
+      'editorGroupHeader.tabsBackground': p.bg,
+      'editorGroupHeader.tabsBorder': p.bg,
+
+      // ── Editor Gutter ─────────────────────────────────────
+      'editorGutter.addedBackground': p.green,
+      'editorGutter.background': p.bg,
+      'editorGutter.deletedBackground': p.red,
+      'editorGutter.foldingControlForeground': p.fgSoft,
+      'editorGutter.modifiedBackground': p.orange,
+
+      // ── Editor Hover / Suggest / Inlay ────────────────────
+      'editorHoverWidget.background': p.bgElevated,
+      'editorHoverWidget.border': p.bgDeep,
+      'editorIndentGuide.background': p.bgElevated,
+      'editorInlayHint.background': p.bgElevated,
+      'editorInlayHint.foreground': p.fgMuted,
+
+      // ── Editor Light Bulb ─────────────────────────────────
+      'editorLightBulb.foreground': p.yellow,
+      'editorLightBulbAi.foreground': p.yellow,
+      'editorLightBulbAutoFix.foreground': p.green,
+
+      // ── Editor Line Numbers ───────────────────────────────
+      'editorLineNumber.activeForeground': p.fgSoft,
+      'editorLineNumber.foreground': p.fgFaint,
+      'editorLink.activeForeground': p.cyan,
+
+      // ── Editor Marker Navigation ──────────────────────────
+      'editorMarkerNavigation.background': p.bgElevated,
+      'editorMarkerNavigationError.background': p.red,
+      'editorMarkerNavigationInfo.background': p.cyan,
+      'editorMarkerNavigationWarning.background': p.orange,
+
+      // ── Editor Overview Ruler ─────────────────────────────
+      'editorOverviewRuler.addedForeground': p.green,
+      'editorOverviewRuler.border': p.bg,
+      'editorOverviewRuler.currentContentForeground': p.bgElevated,
+      'editorOverviewRuler.deletedForeground': p.red,
+      'editorOverviewRuler.errorForeground': p.red,
+      'editorOverviewRuler.findMatchForeground': alpha(p.fg, '26'),
+      'editorOverviewRuler.incomingContentForeground': p.bgElevated,
+      'editorOverviewRuler.infoForeground': p.cyan,
+      'editorOverviewRuler.modifiedForeground': p.orange,
+      'editorOverviewRuler.rangeHighlightForeground': alpha(p.fg, '26'),
+      'editorOverviewRuler.selectionHighlightForeground': alpha(p.fg, '26'),
+      'editorOverviewRuler.warningForeground': p.orange,
+      'editorOverviewRuler.wordHighlightForeground': alpha(p.fg, '26'),
+      'editorOverviewRuler.wordHighlightStrongForeground': alpha(p.fg, '26'),
+
+      // ── Editor Pane / Ruler / Sticky Scroll ───────────────
+      'editorPane.background': p.bg,
+      'editorRuler.foreground': p.fgFaint,
+      'editorStickyScroll.background': p.bg,
+      'editorStickyScroll.border': p.bgElevated,
+      'editorStickyScroll.shadow': p.bg,
+      'editorStickyScrollHover.background': alpha(p.fg, '0c'),
+
+      // ── Editor Suggest Widget ─────────────────────────────
+      'editorSuggestWidget.background': p.bgElevated,
+      'editorSuggestWidget.border': p.bgDeep,
+      'editorSuggestWidget.foreground': p.fgSoft,
+      'editorSuggestWidget.highlightForeground': p.fg,
+      'editorSuggestWidget.selectedBackground': p.bgOverlay,
+
+      // ── Editor Unnecessary / Whitespace ───────────────────
+      'editorUnnecessaryCode.opacity': '#000000a5',
+      'editorWhitespace.foreground': p.fgFaint,
+      'editorWidget.background': p.bgElevated,
+      'editorWidget.border': p.bgDeep,
+
+      // ── Extensions ────────────────────────────────────────
+      'extensionBadge.remoteBackground': p.green,
+      'extensionBadge.remoteForeground': p.fg,
+      'extensionButton.background': p.bgElevated,
+      'extensionButton.foreground': p.fgSoft,
+      'extensionButton.hoverBackground': p.bgOverlay,
+      'extensionButton.prominentBackground': p.bgElevated,
+      'extensionButton.prominentForeground': p.fg,
+      'extensionButton.prominentHoverBackground': p.bgOverlay,
+      'extensionIcon.preReleaseForeground': p.purple,
+      'extensionIcon.sponsorForeground': p.cyan,
+      'extensionIcon.starForeground': p.yellow,
+      'extensionIcon.verifiedForeground': p.green,
+
+      // ── Git Decorations ───────────────────────────────────
+      'gitDecoration.addedResourceForeground': p.green,
+      'gitDecoration.conflictingResourceForeground': p.orange,
+      'gitDecoration.deletedResourceForeground': p.red,
+      'gitDecoration.ignoredResourceForeground': p.fgFaint,
+      'gitDecoration.modifiedResourceForeground': p.yellow,
+      'gitDecoration.stageDeletedResourceForeground': p.red,
+      'gitDecoration.stageModifiedResourceForeground': p.yellow,
+      'gitDecoration.untrackedResourceForeground': p.fgSoft,
+
+      // ── Inline Chat ───────────────────────────────────────
+      'inlineChat.background': p.bg,
+      'inlineChat.border': p.bgDeep,
+      'inlineChat.shadow': p.bgDeepest,
+      'inlineChatDiff.inserted': alpha(p.green, '19'),
+      'inlineChatDiff.removed': alpha(p.green, '19'),
+
+      // ── Input ─────────────────────────────────────────────
+      'input.background': p.bgElevated,
+      'input.border': p.bgOverlay,
+      'input.foreground': p.fg,
+      'input.placeholderForeground': p.fgDim,
+      'inputOption.activeBackground': p.bgOverlay,
+      'inputOption.activeBorder': p.bgOverlay,
+      'inputOption.activeForeground': p.fg,
+      'inputOption.hoverBackground': p.bgOverlay,
+      'inputValidation.errorBackground': p.bgElevated,
+      'inputValidation.errorBorder': p.red,
+      'inputValidation.errorForeground': p.red,
+      'inputValidation.infoBackground': p.bgElevated,
+      'inputValidation.infoBorder': p.cyan,
+      'inputValidation.infoForeground': p.cyan,
+      'inputValidation.warningBackground': p.bgElevated,
+      'inputValidation.warningBorder': p.orange,
+      'inputValidation.warningForeground': p.orange,
+
+      // ── Interactive ───────────────────────────────────────
+      'interactive.activeCodeBorder': p.fgDim,
+      'interactive.inactiveCodeBorder': p.bgElevated,
+
+      // ── Keybinding Label ──────────────────────────────────
+      'keybindingLabel.background': p.bgOverlay,
+      'keybindingLabel.border': p.bgOverlay,
+      'keybindingLabel.bottomBorder': p.bgOverlay,
+      'keybindingLabel.foreground': p.fgSoft,
+
+      // ── List / Tree ───────────────────────────────────────
+      'list.activeSelectionBackground': alpha(p.fg, '0c'),
+      'list.activeSelectionForeground': p.yellow,
+      'list.dropBackground': alpha(p.bgDeepest, 'bf'),
+      'list.errorForeground': p.red,
+      'list.focusBackground': p.bg,
+      'list.focusForeground': p.fg,
+      'list.highlightForeground': p.fg,
+      'list.hoverBackground': alpha(p.fg, '0c'),
+      'list.hoverForeground': p.fg,
+      'list.inactiveFocusBackground': p.bg,
+      'list.inactiveSelectionBackground': alpha(p.fgSoft, '0c'),
+      'list.inactiveSelectionForeground': p.yellow,
+      'list.invalidItemForeground': p.red,
+      'list.warningForeground': p.orange,
+      'listFilterWidget.background': p.bg,
+      'listFilterWidget.noMatchesOutline': p.red,
+      'listFilterWidget.outline': p.bg,
+      'listFilterWidget.shadow': p.bgDeepest,
+
+      // ── Menu ──────────────────────────────────────────────
+      'menu.background': p.bg,
+      'menu.border': p.bgDeep,
+      'menu.foreground': p.fg,
+      'menu.selectionForeground': p.yellow,
+      'menu.separatorBackground': p.bgElevated,
+      'menubar.selectionForeground': p.fg,
+
+      // ── Merge ─────────────────────────────────────────────
+      'merge.border': p.bg,
+      'merge.commonContentBackground': alpha(p.fg, '19'),
+      'merge.commonHeaderBackground': alpha(p.fg, '26'),
+      'merge.currentContentBackground': alpha(p.red, '19'),
+      'merge.currentHeaderBackground': alpha(p.red, '26'),
+      'merge.incomingContentBackground': alpha(p.green, '19'),
+      'merge.incomingHeaderBackground': alpha(p.green, '26'),
+
+      // ── Merge Editor ──────────────────────────────────────
+      'mergeEditor.change.background': alpha(p.fg, '19'),
+      'mergeEditor.change.word.background': alpha(p.fg, '19'),
+      'mergeEditor.conflict.handled.minimapOverViewRuler': p.green,
+      'mergeEditor.conflict.handledFocused.border': p.green,
+      'mergeEditor.conflict.handledUnfocused.border': p.green,
+      'mergeEditor.conflict.unhandled.minimapOverViewRuler': p.red,
+      'mergeEditor.conflict.unhandledFocused.border': p.red,
+      'mergeEditor.conflict.unhandledUnfocused.border': p.red,
+
+      // ── Minimap ───────────────────────────────────────────
+      'minimap.errorHighlight': alpha(p.red, 'a5'),
+      'minimap.findMatchHighlight': alpha(p.fgMuted, 'a5'),
+      'minimap.infoHighlight': alpha(p.cyan, 'a5'),
+      'minimap.selectionHighlight': alpha(p.fgSoft, '26'),
+      'minimap.selectionOccurrenceHighlight': alpha(p.fgDim, 'a5'),
+      'minimap.warningHighlight': alpha(p.orange, 'a5'),
+      'minimapGutter.addedBackground': p.green,
+      'minimapGutter.deletedBackground': p.red,
+      'minimapGutter.modifiedBackground': p.yellow,
+
+      // ── Notebook ──────────────────────────────────────────
+      'notebook.cellBorderColor': p.bgElevated,
+      'notebook.cellEditorBackground': alpha(p.bgDeep, '7f'),
+      'notebook.cellInsertionIndicator': p.fg,
+      'notebook.cellStatusBarItemHoverBackground': p.fgDim,
+      'notebook.cellToolbarSeparator': p.bgElevated,
+      'notebook.editorBackground': p.bg,
+      'notebook.focusedEditorBorder': p.fgDim,
+      'notebookStatusErrorIcon.foreground': p.red,
+      'notebookStatusRunningIcon.foreground': p.fg,
+      'notebookStatusSuccessIcon.foreground': p.green,
+
+      // ── Notifications ─────────────────────────────────────
+      'notificationCenter.border': p.bgDeep,
+      'notificationCenterHeader.background': p.bgElevated,
+      'notificationCenterHeader.foreground': p.fgMuted,
+      'notificationLink.foreground': p.yellow,
+      'notifications.background': p.bgElevated,
+      'notifications.border': p.bgDeep,
+      'notifications.foreground': p.fgSoft,
+      'notificationsErrorIcon.foreground': p.red,
+      'notificationsInfoIcon.foreground': p.cyan,
+      'notificationsWarningIcon.foreground': p.orange,
+      'notificationToast.border': p.bgDeep,
+
+      // ── Panel ─────────────────────────────────────────────
+      'panel.background': p.bgElevated,
+      'panel.border': p.bgDeepest,
+      'panel.dropBackground': alpha(p.bgDeep, 'bf'),
+      'panelStickyScroll.background': p.bgElevated,
+      'panelStickyScroll.border': p.bgOverlay,
+      'panelStickyScroll.shadow': p.bgElevated,
+      'panelTitle.activeBorder': p.yellow,
+      'panelTitle.activeForeground': p.yellow,
+      'panelTitle.inactiveForeground': p.fgMuted,
+
+      // ── Peek View ─────────────────────────────────────────
+      'peekView.border': p.bgDeep,
+      'peekViewEditor.background': p.bgElevated,
+      'peekViewEditor.matchHighlightBackground': p.bgOverlay,
+      'peekViewEditorGutter.background': p.bgElevated,
+      'peekViewResult.background': p.bgElevated,
+      'peekViewResult.fileForeground': p.fgMuted,
+      'peekViewResult.lineForeground': p.fgMuted,
+      'peekViewResult.matchHighlightBackground': p.bgOverlay,
+      'peekViewResult.selectionBackground': p.bgElevated,
+      'peekViewResult.selectionForeground': p.fg,
+      'peekViewTitle.background': p.bgDeep,
+      'peekViewTitleDescription.foreground': p.fgMuted,
+      'peekViewTitleLabel.foreground': p.fg,
+
+      // ── Picker Group ──────────────────────────────────────
+      'pickerGroup.border': p.bg,
+      'pickerGroup.foreground': p.fgFaint,
+
+      // ── Ports ─────────────────────────────────────────────
+      'ports.iconRunningProcessForeground': p.green,
+
+      // ── Problems ──────────────────────────────────────────
+      'problemsErrorIcon.foreground': p.red,
+      'problemsInfoIcon.foreground': p.cyan,
+      'problemsWarningIcon.foreground': p.orange,
+
+      // ── Profile Badge ─────────────────────────────────────
+      'profileBadge.background': p.bgElevated,
+      'profileBadge.foreground': p.fgSoft,
+
+      // ── Progress Bar ──────────────────────────────────────
+      'progressBar.background': p.fgDim,
+
+      // ── Quick Input ───────────────────────────────────────
+      'quickInput.background': p.bgElevated,
+      'quickInput.foreground': p.fgMuted,
+
+      // ── Sash ──────────────────────────────────────────────
+      'sash.hoverBorder': p.fgDim,
+
+      // ── SCM Graph ─────────────────────────────────────────
+      'scmGraph.historyItemHoverLabelForeground': p.bg,
+      'scmGraph.foreground1': p.red,
+      'scmGraph.foreground2': p.orange,
+      'scmGraph.foreground3': p.yellow,
+      'scmGraph.foreground4': p.green,
+      'scmGraph.foreground5': p.purple,
+      'scmGraph.historyItemHoverAdditionsForeground': p.green,
+      'scmGraph.historyItemHoverDeletionsForeground': p.red,
+      'scmGraph.historyItemRefColor': p.purple,
+      'scmGraph.historyItemRemoteRefColor': p.green,
+      'scmGraph.historyItemBaseRefColor': p.cyan,
+      'scmGraph.historyItemHoverDefaultLabelForeground': p.bg,
+      'scmGraph.historyItemHoverDefaultLabelBackground': p.fgDim,
+
+      // ── Scrollbar ─────────────────────────────────────────
+      'scrollbar.shadow': p.bg,
+      'scrollbarSlider.activeBackground': alpha(p.fg, '59'),
+      'scrollbarSlider.background': alpha(p.fgSoft, '26'),
+      'scrollbarSlider.hoverBackground': alpha(p.fg, '26'),
+
+      // ── Selection ─────────────────────────────────────────
+      'selection.background': alpha(p.fgSoft, '26'),
+
+      // ── Settings ──────────────────────────────────────────
+      'settings.checkboxBackground': p.bgElevated,
+      'settings.checkboxBorder': p.bgOverlay,
+      'settings.checkboxForeground': p.yellow,
+      'settings.dropdownBackground': p.bgElevated,
+      'settings.dropdownBorder': p.bgOverlay,
+      'settings.dropdownForeground': p.fg,
+      'settings.dropdownListBorder': p.fgMuted,
+      'settings.headerForeground': p.yellow,
+      'settings.modifiedItemForeground': p.yellow,
+      'settings.modifiedItemIndicator': p.yellow,
+      'settings.numberInputBackground': p.bgElevated,
+      'settings.numberInputBorder': p.bgOverlay,
+      'settings.numberInputForeground': p.fg,
+      'settings.rowHoverBackground': alpha(p.fgDim, '0c'),
+      'settings.sashBorder': p.bgElevated,
+      'settings.settingsHeaderHoverForeground': p.fg,
+      'settings.textInputBackground': p.bgElevated,
+      'settings.textInputBorder': p.bgOverlay,
+      'settings.textInputForeground': p.fg,
+
+      // ── Sidebar ───────────────────────────────────────────
+      'sideBar.background': p.bgDeep,
+      'sideBar.border': p.bgDeepest,
+      'sideBar.dropBackground': alpha(p.bgDeep, 'bf'),
+      'sideBar.foreground': p.fgMuted,
+      'sideBarSectionHeader.background': p.bgDeep,
+      'sideBarSectionHeader.foreground': p.fgDim,
+      'sideBarStickyScroll.background': p.bgDeep,
+      'sideBarStickyScroll.border': p.bgElevated,
+      'sideBarStickyScroll.shadow': p.bgDeep,
+      'sideBarTitle.foreground': p.fgFaint,
+      'simpleFindWidget.sashBorder': '',
+
+      // ── Status Bar ────────────────────────────────────────
+      'statusBar.background': p.bgDeep,
+      'statusBar.border': p.bgDeepest,
+      'statusBar.debuggingBackground': p.fgDim,
+      'statusBar.debuggingBorder': p.bgDeep,
+      'statusBar.debuggingForeground': p.fg,
+      'statusBar.focusBorder': p.bgElevated,
+      'statusBar.foreground': p.fgDim,
+      'statusBar.noFolderBackground': p.bgDeep,
+      'statusBar.noFolderBorder': p.bgDeepest,
+      'statusBar.noFolderForeground': p.fgDim,
+      'statusBarItem.activeBackground': p.bg,
+      'statusBarItem.errorBackground': p.bg,
+      'statusBarItem.errorForeground': p.red,
+      'statusBarItem.focusBorder': p.fgDim,
+      'statusBarItem.hoverBackground': p.bgDeep,
+      'statusBarItem.hoverForeground': p.fg,
+      'statusBarItem.prominentBackground': p.bgElevated,
+      'statusBarItem.offlineBackground': '',
+      'statusBarItem.offlineForeground': '',
+      'statusBarItem.prominentHoverBackground': p.bgElevated,
+      'statusBarItem.remoteBackground': p.bgDeep,
+      'statusBarItem.remoteForeground': p.green,
+      'statusBarItem.remoteHoverBackground': p.green,
+      'statusBarItem.remoteHoverForeground': p.bg,
+      'statusBarItem.warningBackground': p.bg,
+      'statusBarItem.warningForeground': p.orange,
+
+      // ── Symbol Icons ──────────────────────────────────────
+      'symbolIcon.arrayForeground': p.red,
+      'symbolIcon.booleanForeground': p.red,
+      'symbolIcon.classForeground': p.cyan,
+      'symbolIcon.colorForeground': p.purple,
+      'symbolIcon.constantForeground': p.purple,
+      'symbolIcon.constructorForeground': p.green,
+      'symbolIcon.enumeratorForeground': p.orange,
+      'symbolIcon.enumeratorMemberForeground': p.orange,
+      'symbolIcon.eventForeground': p.orange,
+      'symbolIcon.fieldForeground': p.orange,
+      'symbolIcon.fileForeground': p.fgSoft,
+      'symbolIcon.folderForeground': p.fgSoft,
+      'symbolIcon.functionForeground': p.green,
+      'symbolIcon.interfaceForeground': p.cyan,
+      'symbolIcon.keyForeground': p.orange,
+      'symbolIcon.keywordForeground': p.red,
+      'symbolIcon.methodForeground': p.green,
+      'symbolIcon.moduleForeground': p.cyan,
+      'symbolIcon.namespaceForeground': p.cyan,
+      'symbolIcon.nullForeground': p.purple,
+      'symbolIcon.numberForeground': p.purple,
+      'symbolIcon.objectForeground': p.cyan,
+      'symbolIcon.operatorForeground': p.red,
+      'symbolIcon.packageForeground': p.purple,
+      'symbolIcon.propertyForeground': p.orange,
+      'symbolIcon.referenceForeground': p.purple,
+      'symbolIcon.snippetForeground': p.green,
+      'symbolIcon.stringForeground': p.yellow,
+      'symbolIcon.structForeground': p.red,
+      'symbolIcon.textForeground': p.yellow,
+      'symbolIcon.typeParameterForeground': p.orange,
+      'symbolIcon.unitForeground': p.purple,
+      'symbolIcon.variableForeground': p.cyan,
+
+      // ── Tabs ──────────────────────────────────────────────
+      'tab.activeBackground': p.bg,
+      'tab.activeBorder': p.yellow,
+      'tab.activeForeground': p.yellow,
+      'tab.activeModifiedBorder': p.bgOverlay,
+      'tab.border': p.bg,
+      'tab.hoverBackground': p.bg,
+      'tab.hoverBorder': p.bgOverlay,
+      'tab.hoverForeground': p.fg,
+      'tab.inactiveBackground': p.bg,
+      'tab.inactiveForeground': p.fgMuted,
+      'tab.inactiveModifiedBorder': p.bgOverlay,
+      'tab.lastPinnedBorder': p.bgOverlay,
+      'tab.unfocusedActiveBorder': p.fgMuted,
+      'tab.unfocusedActiveForeground': p.fgSoft,
+      'tab.unfocusedActiveModifiedBorder': p.bgElevated,
+      'tab.unfocusedHoverBackground': p.bg,
+      'tab.unfocusedHoverBorder': p.bg,
+      'tab.unfocusedHoverForeground': p.fgSoft,
+      'tab.unfocusedInactiveForeground': p.fgMuted,
+      'tab.unfocusedInactiveModifiedBorder': p.bgElevated,
+
+      // ── Terminal ──────────────────────────────────────────
+      'terminal.ansiBlack': p.bgElevated,
+      'terminal.ansiBlue': p.orange,
+      'terminal.ansiBrightBlack': p.fgDim,
+      'terminal.ansiBrightBlue': p.orange,
+      'terminal.ansiBrightCyan': p.cyan,
+      'terminal.ansiBrightGreen': p.green,
+      'terminal.ansiBrightMagenta': p.purple,
+      'terminal.ansiBrightRed': p.red,
+      'terminal.ansiBrightWhite': p.fg,
+      'terminal.ansiBrightYellow': p.yellow,
+      'terminal.ansiCyan': p.cyan,
+      'terminal.ansiGreen': p.green,
+      'terminal.ansiMagenta': p.purple,
+      'terminal.ansiRed': p.red,
+      'terminal.ansiWhite': p.fg,
+      'terminal.ansiYellow': p.yellow,
+      'terminal.background': p.bgElevated,
+      'terminal.foreground': p.fg,
+      'terminal.selectionBackground': alpha(p.fg, '26'),
+      'terminalCommandDecoration.defaultBackground': p.fg,
+      'terminalCommandDecoration.errorBackground': p.red,
+      'terminalCommandDecoration.successBackground': p.green,
+      'terminalCursor.background': p.transparent,
+      'terminalCursor.foreground': p.fg,
+
+      // ── Testing ───────────────────────────────────────────
+      'testing.iconErrored': p.red,
+      'testing.iconFailed': p.red,
+      'testing.iconPassed': p.green,
+      'testing.iconQueued': p.fg,
+      'testing.iconSkipped': p.orange,
+      'testing.iconUnset': p.fgMuted,
+      'testing.message.error.decorationForeground': p.red,
+      'testing.message.error.lineBackground': alpha(p.red, '19'),
+      'testing.message.info.decorationForeground': p.fg,
+      'testing.message.info.lineBackground': alpha(p.fg, '19'),
+      'testing.runAction': p.yellow,
+
+      // ── Text ──────────────────────────────────────────────
+      'textBlockQuote.background': p.bgElevated,
+      'textBlockQuote.border': p.bgElevated,
+      'textCodeBlock.background': p.bgElevated,
+      'textLink.activeForeground': p.fg,
+      'textLink.foreground': p.yellow,
+      'textPreformat.foreground': p.fg,
+      'textSeparator.foreground': p.fgDim,
+
+      // ── Title Bar ─────────────────────────────────────────
+      'titleBar.activeBackground': p.bgDeep,
+      'titleBar.activeForeground': p.fgMuted,
+      'titleBar.border': p.bgDeepest,
+      'titleBar.inactiveBackground': p.bgDeep,
+      'titleBar.inactiveForeground': p.fgFaint,
+
+      // ── Tree ──────────────────────────────────────────────
+      'tree.inactiveIndentGuidesStroke': p.bg,
+      'tree.indentGuidesStroke': p.bgElevated,
+
+      // ── Walk Through / Welcome ────────────────────────────
+      'walkThrough.embeddedEditorBackground': p.bgDeep,
+      'welcomePage.buttonBackground': p.bgElevated,
+      'welcomePage.buttonHoverBackground': p.bgOverlay,
+      'welcomePage.progress.background': p.fgDim,
+      'welcomePage.progress.foreground': p.fgMuted,
+      'welcomePage.tileBackground': p.bgElevated,
+      'welcomePage.tileHoverBackground': p.bgOverlay,
+      'welcomePage.tileShadow': p.bgDeepest,
+
+      // ── Widget ────────────────────────────────────────────
+      'widget.shadow': p.bgDeepest,
+    },
+
+    tokenColors: [
+      // ── Comments ──────────────────────────────────────────
+      {
+        scope: ['comment', 'comment keyword', 'comment markup.underline.link', 'comment string', 'comment punctuation.definition', 'comment punctuation', 'comment text'],
+        settings: { name: 'Comments and overrides inside comments', fontStyle: 'italic', foreground: t.comment },
+      },
+      { scope: 'comment storage.type', settings: { name: 'JSDoc storage type', foreground: t.comment } },
+      { scope: 'comment entity.name.type', settings: { name: 'JSDoc entity name', foreground: t.commentDoc } },
+      { scope: ['comment variable', 'comment variable.other'], settings: { name: 'JSDoc variable', foreground: t.commentDoc } },
+      { scope: ['comment keyword', 'comment entity.name.tag', 'entity.name.tag.documentation'], settings: { name: 'PHPDoc keyword', foreground: t.commentDoc } },
+      { scope: 'comment keyword.codetag.notation', settings: { name: 'Comment TODO / FIXME', foreground: t.label } },
+      { scope: 'comment.git-status.header.remote', settings: { name: 'Git status remote', foreground: t.gitRemote } },
+      { scope: 'comment.git-status.header.local', settings: { name: 'Git status local', foreground: t.gitLocal } },
+      { scope: 'comment.other.git-status.head', settings: { name: 'Git status head', foreground: t.gitHead } },
+      { scope: ['string.quoted.docstring', 'string.quoted.docstring punctuation.definition'], settings: { name: 'Docstring', foreground: t.comment } },
+
+      // ── Constants ─────────────────────────────────────────
+      { scope: 'constant', settings: { name: 'Constant', foreground: t.constant } },
+      { scope: 'constant.other', settings: { name: 'Constant other', foreground: t.constantOther } },
+      { scope: 'constant.other.caps', settings: { name: 'Constant caps', foreground: t.constant } },
+      { scope: 'constant.other.placeholder', settings: { name: 'Placeholders', foreground: t.variableParam } },
+      { scope: 'constant.other.property', settings: { name: 'Constant as property', foreground: t.constant } },
+      { scope: 'constant.other.citation.latex', settings: { name: 'Constant in latex', foreground: t.constant } },
+      { scope: 'constant.other.color', settings: { name: 'Constant as color', foreground: t.constant } },
+      { scope: 'constant.other.character-class.escape', settings: { name: 'Character class escape', foreground: t.constant } },
+      { scope: 'constant.other.key', settings: { name: 'Constant as key', foreground: t.constant } },
+      { scope: 'constant.other.symbol', settings: { name: 'Constant as symbol', foreground: t.variableParam } },
+      { scope: 'constant.other.elm', settings: { name: 'Constants in elm', foreground: t.class } },
+      { scope: 'constant.numeric', settings: { name: 'Number', foreground: t.number } },
+      { scope: 'constant.language', settings: { name: 'Language constant', foreground: t.constant } },
+      { scope: 'constant.character.escape', settings: { name: 'Character escape', foreground: t.constant } },
+      { scope: 'constant.numeric.line-number.find-in-files', settings: { name: 'Search result line numbers', foreground: p.fgFaint } },
+      { scope: 'constant.numeric.line-number.match.find-in-files', settings: { name: 'Search result matched line numbers', foreground: t.string } },
+
+      // ── Entity Names ──────────────────────────────────────
+      { scope: 'entity.name.section', settings: { name: 'Sections', foreground: t.heading } },
+      { scope: ['entity.name.function', 'entity.name.function.templated', 'entity.name.function.member.static'], settings: { name: 'Functions', foreground: t.function } },
+      { scope: ['entity.name.type.class.templated', 'entity.name.type.class.generic', 'entity.name.type.namespace'], settings: { name: 'Class template', foreground: t.class } },
+      { scope: 'entity.name.label', settings: { name: 'Label', foreground: t.label } },
+      { scope: 'entity.name.function.preprocessor', settings: { name: 'Macros', foreground: t.class } },
+      { scope: 'entity.name', settings: { name: 'Entity name', foreground: t.function } },
+      { scope: 'entity.name.class', settings: { name: 'Class name', foreground: t.class } },
+      { scope: 'entity.name.constant', settings: { name: 'Constant name', foreground: t.constant } },
+      { scope: 'entity.name.namespace', settings: { name: 'Namespace', foreground: t.class } },
+      { scope: 'entity.other.inherited-class', settings: { name: 'Inherited class', fontStyle: 'italic', foreground: t.class } },
+      { scope: 'entity.name.function', settings: { name: 'Function name', foreground: t.function } },
+      { scope: ['entity.name.tag', 'entity.name.tag.js.jsx support.class.component.js.jsx', 'entity.name.tag support.class.component', 'source.vue support.class.component'], settings: { name: 'Tag name', foreground: t.tag } },
+      { scope: 'source.ansible entity.name.tag', settings: { name: 'Tag name (Ansible)', foreground: t.class } },
+      { scope: 'entity.name.function.operator', settings: { name: 'Operator', foreground: t.keyword } },
+      { scope: ['meta.brackets entity.name.function.operator', 'punctuation.separator entity.name.function.operator'], settings: { name: 'Operator in brackets', foreground: t.operatorMeta } },
+      { scope: ['entity.name.type', 'entity.name.type.class.reference', 'entity.name.type.class.value'], settings: { name: 'Entity name type', foreground: t.type } },
+      { scope: 'entity.other.attribute-name', settings: { name: 'Tag attribute', fontStyle: 'italic', foreground: t.attribute } },
+      { scope: ['entity.other.attribute-name.class.css', 'entity.other.attribute-name.parent-selector-suffix.css', 'entity.other.attribute-name.parent-selector-suffix.css punctuation.definition.entity.css', 'entity.other.attribute-name.css', 'entity.other.animation-name.css'], settings: { name: 'CSS class', foreground: t.cssClass } },
+      { scope: 'entity.other.attribute-name.id.css', settings: { name: 'CSS id', foreground: t.cssId } },
+      { scope: ['entity.other.attribute-name.pseudo-class.css', 'entity.other.pseudo-class.css', 'entity.other.pseudo-element.css'], settings: { name: 'CSS pseudo class', fontStyle: 'italic', foreground: t.cssPseudo } },
+      { scope: ['entity.name.function', 'support.function'], settings: { name: 'Function names / calls', foreground: t.function } },
+      { scope: 'entity.other.git-status.hex', settings: { name: 'Git status commit hex', foreground: t.gitHash } },
+      { scope: 'entity.other.jinja2.delimiter', settings: { name: 'Jinja delimiters', foreground: t.operatorMeta } },
+      { scope: 'entity.name.operator.custom-literal', settings: { name: 'Custom literal', foreground: t.markup } },
+      { scope: 'entity.name.operator.custom-literal.string', settings: { name: 'Custom literal string', foreground: t.string } },
+      { scope: 'entity.name.operator.custom-literal.number', settings: { name: 'Custom literal number', foreground: t.number } },
+      { scope: 'entity.name.type.rust', settings: { name: 'Rust type', foreground: t.class } },
+      { scope: 'entity.name.lifetime.rust', settings: { name: 'Rust lifetime', foreground: t.keyword } },
+
+      // ── Invalid ───────────────────────────────────────────
+      { scope: 'invalid', settings: { name: 'Invalid', foreground: t.invalid, fontStyle: 'italic underline' } },
+      { scope: 'invalid.deprecated', settings: { name: 'Invalid deprecated', foreground: t.invalidDeprecated, fontStyle: 'italic underline' } },
+
+      // ── Keywords ──────────────────────────────────────────
+      { scope: 'keyword', settings: { name: 'Keyword', foreground: t.keyword } },
+      { scope: 'keyword.control', settings: { name: 'Control keyword', foreground: t.keyword } },
+      { scope: 'keyword.control.directive', settings: { name: 'Keyword control directive', foreground: t.keyword } },
+      { scope: ['keyword.operator', 'keyword.operator.member', 'keyword.operator.new'], settings: { name: 'Operator', foreground: t.operator } },
+      { scope: 'keyword.other.substitution', settings: { name: 'Substitution string', foreground: t.operatorMeta } },
+      { scope: ['keyword.other.template.begin', 'keyword.other.template.end'], settings: { name: 'Template literal begin / end', foreground: t.keyword } },
+      { scope: ['keyword.operator.heading.restructuredtext', 'keyword.operator.table.row.restructuredtext keyword.operator.table.data.restructuredtext'], settings: { name: 'RestructuredText heading', foreground: t.operatorMeta } },
+      { scope: 'keyword.other.parenthesis.elm', settings: { name: 'Elm parenthesis', foreground: t.operatorMeta } },
+      { scope: ['keyword.other.fn.rust', 'keyword.other.rust', 'keyword.other.unsafe.rust', 'keyword.other.where.rust'], settings: { name: 'Rust keywords', foreground: t.class } },
+      { scope: ['keyword.control.rust', 'keyword.operator.misc.rust'], settings: { name: 'Rust control', foreground: t.keyword } },
+      { scope: ['keyword.declaration.class.ruby', 'keyword.declaration.function.ruby', 'keyword.declaration.namespace.ruby'], settings: { name: 'Ruby declarations', foreground: t.keyword } },
+
+      // ── Markup ────────────────────────────────────────────
+      { scope: 'markup.italic', settings: { name: 'Italic', fontStyle: 'italic' } },
+      { scope: 'markup.bold', settings: { name: 'Bold', fontStyle: 'bold' } },
+      { scope: 'markup.heading', settings: { name: 'Heading', foreground: t.heading } },
+      { scope: 'markup.raw', settings: { name: 'Raw', foreground: t.markupRaw } },
+      { scope: 'markup.underline', settings: { name: 'Underline', fontStyle: 'underline' } },
+      { scope: 'markup.underline.link', settings: { name: 'Link', foreground: t.link } },
+      { scope: ['markup.inserted', 'markup.inserted punctuation.definition.inserted'], settings: { name: 'Diff inserted', foreground: t.link } },
+      { scope: ['markup.deleted', 'markup.deleted punctuation.definition.deleted'], settings: { name: 'Diff deleted', foreground: t.keyword } },
+      { scope: ['markup.changed', 'markup.changed punctuation.definition.changed'], settings: { name: 'Diff changed', foreground: t.heading } },
+      { scope: ['markup.ignored', 'markup.ignored punctuation.definition.ignored'], settings: { name: 'Diff ignored', foreground: t.operatorMeta } },
+      { scope: 'markup.untracked', settings: { name: 'Diff untracked', foreground: t.operatorMeta } },
+      { scope: 'markup.quote', settings: { name: 'Markup quote', fontStyle: 'italic' } },
+
+      // ── Meta ──────────────────────────────────────────────
+      { scope: ['meta.brace.round', 'meta.brace.square', 'meta.brace.curly', 'meta.delimiter.comma.js', 'meta.function-call.without-arguments.js', 'meta.function-call.method.without-arguments.js'], settings: { name: 'Braces, delimiters', foreground: t.punctuation } },
+      { scope: ['meta.function-call.generic.python', 'support.function.builtin.python'], settings: { name: 'Function call (Python)', foreground: t.function } },
+      { scope: 'meta.function-call.python meta.function-call.arguments.python', settings: { name: 'Function arguments (Python)', foreground: t.markup } },
+      { scope: 'meta.interpolation', settings: { name: 'Interpolation strings', foreground: t.interpolation } },
+      { scope: 'meta.instance.constructor', settings: { name: 'Constructor', foreground: t.function } },
+      { scope: ['meta.attribute-with-value.class string', 'meta.attribute.class.html string'], settings: { name: 'Class string name', foreground: t.cssClass } },
+      { scope: ['meta.attribute-with-value.id string', 'meta.attribute.id.html string'], settings: { name: 'ID string name', foreground: t.cssId } },
+      { scope: 'source.json meta.mapping.key string', settings: { name: 'JSON keys', foreground: t.jsonKey } },
+      { scope: 'source.yaml meta.mapping.key string', settings: { name: 'YAML keys', foreground: t.yamlKey } },
+      { scope: 'meta.object.member', settings: { name: 'Object members', foreground: t.markup } },
+      { scope: 'meta.property-list.css variable.other', settings: { name: 'SCSS Variable', foreground: t.scssVar } },
+      { scope: ['entity.name.constant.preprocessor', 'meta.preprocessor'], settings: { name: 'Preprocessor', foreground: t.constant } },
+      { scope: 'meta.diff.git-diff.header', settings: { name: 'Git diff header', foreground: t.heading } },
+      { scope: 'meta.type_params.rust', settings: { name: 'Rust type params', foreground: t.markup } },
+      { scope: ['meta.attribute.rust', 'meta.annotation.rust', 'variable.language.rust', 'variable.annotation.rust', 'meta.annotation.rust string', 'meta.annotation.rust keyword', 'meta.annotation.rust keyword.operator', 'meta.attribute.rust string'], settings: { name: 'Rust attributes', foreground: t.commentDoc } },
+      { scope: ['meta.type variable', 'meta.type variable.other.readwrite', 'variable.annotation', 'meta.decorator variable.other.readwrite'], settings: { name: 'Type annotation', foreground: t.constant } },
+
+      // ── Punctuation ───────────────────────────────────────
+      { scope: 'punctuation', settings: { name: 'Punctuation', foreground: t.punctuation } },
+      { scope: ['punctuation.definition.tag', 'punctuation.definition.tag source', 'punctuation.definition.group.begin.ruby', 'punctuation.definition.group.end.ruby', 'punctuation.definition.group.begin.css', 'punctuation.definition.group.end.css', 'punctuation.definition.string.end.html source.css', 'punctuation.definition.block', 'punctuation.definition.parameters.begin', 'punctuation.definition.parameters.end', 'punctuation.separator.parameter', 'punctuation.accessor', 'punctuation.terminator'], settings: { name: 'Punctuation tags', foreground: t.punctuation } },
+      { scope: 'punctuation.definition.group', settings: { name: 'Group (regex)', foreground: t.markup } },
+      { scope: 'punctuation.definition.comment', settings: { name: 'Comment start / end', foreground: t.punctuationComment } },
+      { scope: ['punctuation.definition.variable', 'punctuation.definition.keyword.scss', 'punctuation.definition.entity.css'], settings: { name: 'Variable indicator', foreground: t.punctuationVar } },
+      { scope: ['punctuation.section.embedded', 'punctuation.section.embedded entity.name.tag', 'punctuation.section.embedded constant.other', 'punctuation.section.embedded source', 'punctuation.section.embedded.begin'], settings: { name: 'Punctuation section embedded', foreground: t.embedded } },
+      { scope: ['punctuation.template-string.element.begin', 'punctuation.template-string.element.end', 'punctuation.definition.string.template.begin', 'punctuation.definition.string.template.end', 'string.quoted.template punctuation.definition.string.begin', 'string.quoted.template punctuation.definition.string.end', 'punctuation.definition.template-expression.begin', 'punctuation.definition.template-expression.end'], settings: { name: 'Punctuation template string', foreground: t.keyword } },
+      { scope: ['meta.paragraph.markdown meta.dummy.line-break', 'meta.paragraph.markdown meta.hard-line-break.markdown'], settings: { name: 'Hard line break in Markdown', background: t.constant } },
+      { scope: 'markup.underline.link punctuation', settings: { name: 'Punctuation in markdown links', foreground: t.link } },
+      { scope: ['meta.brace.round', 'meta.brace.square', 'keyword.operator.type.annotation', 'meta.type storage.modifier.array'], settings: { name: 'Meta braces', foreground: t.punctuation } },
+
+      // ── Regions ───────────────────────────────────────────
+      { scope: 'region.redish', settings: { name: 'Region red', foreground: p.red, background: alpha(p.red, '59') } },
+      { scope: 'region.orangish', settings: { name: 'Region orange', foreground: p.orange, background: alpha(p.orange, '59') } },
+      { scope: 'region.yellowish', settings: { name: 'Region yellow', foreground: p.yellow, background: alpha(p.yellow, '59') } },
+      { scope: 'region.greenish', settings: { name: 'Region green', foreground: p.green, background: alpha(p.green, '59') } },
+      { scope: 'region.bluish', settings: { name: 'Region blue', foreground: p.cyan, background: alpha(p.cyan, '59') } },
+      { scope: 'region.purplish', settings: { name: 'Region purple', foreground: p.purple, background: alpha(p.purple, '59') } },
+      { scope: 'region.pinkish', settings: { name: 'Region pink', foreground: p.red, background: alpha(p.red, '59') } },
+      { scope: 'region.whitish', settings: { name: 'Region white', foreground: p.white } },
+
+      // ── Source ────────────────────────────────────────────
+      { scope: 'source', settings: { name: 'Source', foreground: t.markup } },
+      { scope: ['source.scss', 'source.sass'], settings: { name: 'SASS, SCSS default', foreground: t.punctuation } },
+      { scope: ['source.sass variable.other', 'source.sass variable.sass', 'source.scss variable.other', 'source.scss variable.scss', 'source.scss variable.sass', 'source.css variable.other', 'source.css variable.scss', 'source.less variable.other', 'source.less variable.other.less', 'source.less variable.declaration.less'], settings: { name: 'SASS, SCSS and LESS variables', fontStyle: 'italic', foreground: t.scssVar } },
+      { scope: 'source.git-show.commit.sha', settings: { name: 'Git SHA', foreground: t.gitHash } },
+      { scope: ['source.git-show.author', 'source.git-show.date', 'source.git-diff.command', 'source.git-diff.command meta.diff.git-diff.header.from-file', 'source.git-diff.command meta.diff.git-diff.header.to-file'], settings: { name: 'Git metadata', foreground: t.punctuation } },
+      { scope: ['source.git-show meta.diff.git-diff.header.extended.index.from-sha', 'source.git-show meta.diff.git-diff.header.extended.index.to-sha'], settings: { name: 'Git diff header hash', foreground: t.gitHash } },
+      { scope: 'source.git-show meta.diff.range.unified', settings: { name: 'Git diff header range', foreground: t.diffRange } },
+      { scope: ['source.git-show meta.diff.header.from-file', 'source.git-show meta.diff.header.to-file'], settings: { name: 'Git diff header files', foreground: t.punctuation } },
+
+      // ── Storage ───────────────────────────────────────────
+      { scope: 'storage', settings: { name: 'Storage', foreground: t.storage } },
+      { scope: 'storage.type', settings: { name: 'Storage type', fontStyle: 'italic', foreground: t.storageType } },
+      { scope: 'storage.type.extends', settings: { name: 'Extends', fontStyle: 'normal', foreground: t.storage } },
+      { scope: 'storage.type.function.arrow', settings: { name: 'Fat arrow function', fontStyle: 'normal', foreground: t.storage } },
+      { scope: ['storage.modifier', 'storage.type.modifier'], settings: { name: 'Storage modifier', fontStyle: 'italic', foreground: t.storage } },
+      { scope: 'storage.class.restructuredtext.ref', settings: { name: 'RestructuredText refs', foreground: t.constant } },
+      { scope: ['storage.modifier.visibility.rust', 'storage.modifier.lifetime.rust'], settings: { name: 'Rust visibility', foreground: t.keyword } },
+      { scope: ['storage.modifier.const.rust', 'storage.modifier.dyn.rust', 'storage.modifier.mut.rust', 'storage.modifier.static.rust', 'storage.type.rust', 'storage.type.core.rust', 'storage.class.std.rust'], settings: { name: 'Rust storage types', foreground: t.storageType } },
+      { scope: ['storage.type.rust', 'storage.modifier.const.rust', 'storage.modifier.dyn.rust', 'storage.modifier.mut.rust', 'storage.modifier.static.rust', 'keyword.other.rust', 'keyword.other.where.rust'], settings: { name: 'Rust storage (adjusted)', foreground: t.keyword } },
+      { scope: 'storage.modifier.import.java', settings: { name: 'Imported Java libraries', foreground: t.markup } },
+
+      // ── Strings ───────────────────────────────────────────
+      { scope: 'string', settings: { name: 'String', foreground: t.string } },
+      { scope: 'string.unquoted.label', settings: { name: 'String label', foreground: t.markup } },
+      { scope: 'string source', settings: { name: 'Source in template string', foreground: t.markup } },
+      { scope: ['string source punctuation.section.embedded', 'string punctuation.definition.string source'], settings: { name: 'Embedded punctuation in template string', foreground: t.punctuation } },
+      { scope: ['string.other.link.title', 'string.other.link.description'], settings: { name: 'Link title', foreground: t.linkTitle } },
+      { scope: 'string.other.link.description.title', settings: { name: 'Link description', foreground: t.linkDesc } },
+      { scope: ['string.regexp punctuation.definition.string.begin', 'string.regexp punctuation.definition.string.end'], settings: { name: 'String regexp begin / end', foreground: t.keyword } },
+      { scope: ['string.other.ref', 'string.other.restructuredtext.ref'], settings: { name: 'RestructuredText refs', foreground: t.link } },
+      { scope: 'string.other.git-status.help.key', settings: { name: 'Git status help key', foreground: t.commentDoc } },
+      { scope: 'string.other.git-status.remote', settings: { name: 'Git status remote', foreground: t.gitRemote } },
+
+      // ── Support ───────────────────────────────────────────
+      { scope: 'support.constant', settings: { name: 'Library constant', foreground: t.class } },
+      { scope: 'support.constant.handlebars', settings: { name: 'Handlebars start / end', foreground: t.punctuation } },
+      { scope: 'support.type.vendor-prefix.css', settings: { name: 'Vendor prefix', foreground: t.commentDoc } },
+      { scope: 'support.function', settings: { name: 'Support function', foreground: t.function } },
+      { scope: 'support.macro', settings: { name: 'Support macro', foreground: t.function } },
+      { scope: 'support.function.delimiter.elm', settings: { name: 'Elm function brackets', foreground: t.punctuation } },
+      { scope: ['support.type', 'entity.name.type.object.console'], settings: { name: 'Library type', fontStyle: 'italic', foreground: t.type } },
+      { scope: ['support.variable', 'support.variable.property'], settings: { name: 'Support variables', foreground: t.class } },
+      { scope: 'support.type.property-name', settings: { name: 'Library type property / JSON keys', fontStyle: 'normal', foreground: t.markup } },
+      { scope: 'support.class', settings: { name: 'Library class', foreground: t.class } },
+      { scope: 'support.constant.core.rust', settings: { name: 'Rust support constant', foreground: t.constant } },
+      { scope: ['comment support', 'comment support.class'], settings: { name: 'Comment support', foreground: t.comment } },
+
+      // ── Text ──────────────────────────────────────────────
+      { scope: 'text', settings: { name: 'Text', foreground: t.markup } },
+      { scope: 'text.find-in-files', settings: { name: 'Search result', foreground: t.markup } },
+
+      // ── Variables ─────────────────────────────────────────
+      { scope: ['variable', 'variable.other'], settings: { name: 'Variable', foreground: t.variable } },
+      { scope: ['variable.parameter', 'parameters variable.function'], settings: { name: 'Function arguments', fontStyle: 'italic', foreground: t.variableParam } },
+      { scope: ['variable.language', 'variable.parameter.function.language.special.self.python', 'variable.parameter.function.language.special.cls.python'], settings: { name: 'Language variables (this, self, super)', fontStyle: 'italic', foreground: t.variableLang } },
+      { scope: 'variable.language.arguments', settings: { name: 'Arguments variable', foreground: t.constant } },
+      { scope: 'variable.other.class', settings: { name: 'Library function', foreground: t.class } },
+      { scope: 'variable.other.constant', settings: { name: 'Immutable variables', foreground: t.constant } },
+      { scope: 'variable.other.readwrite', settings: { name: 'Read/write variables', foreground: t.variable } },
+      { scope: 'variable.other.member', settings: { name: 'Member variables', foreground: t.variable } },
+      { scope: 'variable.other.enummember', settings: { name: 'Enum member', foreground: t.constant } },
+      { scope: ['variable.other.property', 'variable.other.property.static', 'variable.other.event'], settings: { name: 'Variable property', foreground: t.variable } },
+      { scope: 'variable.function', settings: { name: 'Variable function', foreground: t.function } },
+      { scope: 'variable.other.substitution', settings: { name: 'Substitution', foreground: t.variableParam } },
+      { scope: ['source.ruby variable.other.readwrite.instance.ruby', 'source.ruby variable.other.readwrite.class.ruby'], settings: { name: 'Ruby instance variables', foreground: t.constant } },
+      { scope: 'source.jinja2 variable.other.jinja2.block', settings: { name: 'Jinja2 variable block', foreground: t.function } },
+      { scope: 'source.jinja2 variable.other.jinja2', settings: { name: 'Jinja2 variable', foreground: t.variableParam } },
+    ],
+  };
+}
 
 // ── Variants ─────────────────────────────────────────────────
 const variants = [
-  { name: 'XX121',        palette: palettes.blue,   file: 'XX121-color-theme.json' },
-  { name: 'XX121 Yellow', palette: palettes.yellow,  file: 'XX121-yellow-color-theme.json' },
+  { name: 'XX121',        palette: palettes.blue,   file: 'XX121-theme.json' },
+  { name: 'XX121 Yellow', palette: palettes.yellow,  file: 'XX121-yellow-theme.json' },
 ];
 
 // ── Write Output ────────────────────────────────────────────
 const themesDir = path.join(__dirname, 'themes');
 if (!fs.existsSync(themesDir)) fs.mkdirSync(themesDir);
-console.log('INTERFACE ONLINE');
+console.log('BUILD START');
 for (const variant of variants) {
   const theme = buildTheme(variant.name, variant.palette);
   const outputPath = path.join(themesDir, variant.file);
