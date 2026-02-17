@@ -57,6 +57,11 @@
         "label": "XX121 Green",
         "uiTheme": "vs-dark",
         "path": "./themes/XX121-green-color-theme.json"
+      },
+      {
+        "label": "XX121 Red",
+        "uiTheme": "vs-dark",
+        "path": "./themes/XX121-red-color-theme.json"
       }
     ]
   }

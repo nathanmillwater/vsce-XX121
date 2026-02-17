@@ -8,6 +8,7 @@ const variants = [
   { name: 'XX121',        palette: palettes.blue,   file: 'XX121-color-theme.json' },
   { name: 'XX121 Yellow', palette: palettes.yellow,  file: 'XX121-yellow-color-theme.json' },
   { name: 'XX121 Green',  palette: palettes.green,   file: 'XX121-green-color-theme.json' },
+  { name: 'XX121 Red',    palette: palettes.red,     file: 'XX121-red-color-theme.json' },
 ];
 
 // ── Write Output ────────────────────────────────────────────
