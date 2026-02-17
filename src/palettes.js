@@ -35,7 +35,7 @@ const palettes = {
     // Utility
     black:        '#000000',
     white:        '#f8f7d8',
-    border:       '#383412',
+    border:       '#000000',
     borderBright: '#504b1e',
     none:         '#00000000',
   },
