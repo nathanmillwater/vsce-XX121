@@ -16,7 +16,7 @@ function buildTheme(name, p) {
       // ── Activity Bar ──────────────────────────────────────
       'activityBar.activeFocusBorder': p.yellow,
       'activityBar.background': p.bgDeepest,
-      'activityBar.border': p.bgDeepest,
+      'activityBar.border': p.border,
       'activityBar.foreground': p.fgSoft,
       'activityBar.inactiveForeground': p.fgFaint,
       'activityBarBadge.background': p.yellow,
@@ -63,20 +63,20 @@ function buildTheme(name, p) {
       'chat.avatarBackground': p.bg,
       'chat.avatarForeground': p.purple,
       'chat.requestBackground': p.bgElevated,
-      'chat.requestBorder': p.bgOverlay,
+      'chat.requestBorder': p.borderControl,
       'chat.slashCommandBackground': p.transparent,
       'chat.slashCommandForeground': p.yellow,
 
       // ── Checkbox ──────────────────────────────────────────
       'checkbox.background': p.bgElevated,
-      'checkbox.border': p.bgOverlay,
+      'checkbox.border': p.borderControl,
       'checkbox.foreground': p.yellow,
 
       // ── Command Center ────────────────────────────────────
       'commandCenter.activeBackground': p.bg,
       'commandCenter.activeForeground': p.fgSoft,
       'commandCenter.background': p.bgDeep,
-      'commandCenter.border': p.bg,
+      'commandCenter.border': p.borderSubtle,
       'commandCenter.debuggingBackground': p.bgDeep,
       'commandCenter.foreground': p.fgMuted,
 
@@ -89,7 +89,7 @@ function buildTheme(name, p) {
 
       // ── Debug Exception Widget ────────────────────────────
       'debugExceptionWidget.background': p.bgElevated,
-      'debugExceptionWidget.border': p.bgDeep,
+      'debugExceptionWidget.border': p.borderSubtle,
 
       // ── Debug Icons ───────────────────────────────────────
       'debugIcon.breakpointCurrentStackframeForeground': p.yellow,
@@ -151,7 +151,7 @@ function buildTheme(name, p) {
 
       // ── Dropdown ──────────────────────────────────────────
       'dropdown.background': p.bgElevated,
-      'dropdown.border': p.bgOverlay,
+      'dropdown.border': p.borderControl,
       'dropdown.foreground': p.fgMuted,
       'dropdown.listBackground': p.bgElevated,
 
@@ -221,19 +221,19 @@ function buildTheme(name, p) {
       'editorWarning.border': p.transparent,
       'editorWarning.foreground': p.orange,
       'editorInfo.background': p.transparent,
-      'editorInfo.border': p.bg,
+      'editorInfo.border': p.borderSubtle,
       'editorInfo.foreground': p.cyan,
-      'editorHint.border': p.bg,
+      'editorHint.border': p.borderSubtle,
       'editorHint.foreground': p.purple,
 
       // ── Editor Groups ─────────────────────────────────────
-      'editorGroup.border': p.bgDeep,
+      'editorGroup.border': p.borderSubtle,
       'editorGroup.dropBackground': alpha(p.bgDeep, 'bf'),
       'editorGroup.emptyBackground': p.bgDeepest,
-      'editorGroup.focusedEmptyBorder': p.bgDeep,
+      'editorGroup.focusedEmptyBorder': p.borderSubtle,
       'editorGroupHeader.noTabsBackground': p.bg,
       'editorGroupHeader.tabsBackground': p.bg,
-      'editorGroupHeader.tabsBorder': p.bg,
+      'editorGroupHeader.tabsBorder': p.borderSubtle,
 
       // ── Editor Gutter ─────────────────────────────────────
       'editorGutter.addedBackground': p.green,
@@ -244,7 +244,7 @@ function buildTheme(name, p) {
 
       // ── Editor Hover / Suggest / Inlay ────────────────────
       'editorHoverWidget.background': p.bgElevated,
-      'editorHoverWidget.border': p.bgDeep,
+      'editorHoverWidget.border': p.borderSubtle,
       'editorIndentGuide.background': p.bgElevated,
       'editorInlayHint.background': p.bgElevated,
       'editorInlayHint.foreground': p.fgMuted,
@@ -271,7 +271,7 @@ function buildTheme(name, p) {
 
       // ── Editor Overview Ruler ─────────────────────────────
       'editorOverviewRuler.addedForeground': p.green,
-      'editorOverviewRuler.border': p.bg,
+      'editorOverviewRuler.border': p.borderSubtle,
       'editorOverviewRuler.currentContentForeground': p.bgElevated,
       'editorOverviewRuler.deletedForeground': p.red,
       'editorOverviewRuler.errorForeground': p.red,
@@ -289,13 +289,13 @@ function buildTheme(name, p) {
       'editorPane.background': p.bg,
       'editorRuler.foreground': p.fgFaint,
       'editorStickyScroll.background': p.bg,
-      'editorStickyScroll.border': p.bgElevated,
+      'editorStickyScroll.border': p.borderSubtle,
       'editorStickyScroll.shadow': p.bg,
       'editorStickyScrollHover.background': alpha(p.fg, '0c'),
 
       // ── Editor Suggest Widget ─────────────────────────────
       'editorSuggestWidget.background': p.bgElevated,
-      'editorSuggestWidget.border': p.bgDeep,
+      'editorSuggestWidget.border': p.borderSubtle,
       'editorSuggestWidget.foreground': p.fgSoft,
       'editorSuggestWidget.highlightForeground': p.fg,
       'editorSuggestWidget.selectedBackground': p.bgOverlay,
@@ -304,7 +304,7 @@ function buildTheme(name, p) {
       'editorUnnecessaryCode.opacity': '#000000a5',
       'editorWhitespace.foreground': p.fgFaint,
       'editorWidget.background': p.bgElevated,
-      'editorWidget.border': p.bgDeep,
+      'editorWidget.border': p.borderSubtle,
 
       // ── Extensions ────────────────────────────────────────
       'extensionBadge.remoteBackground': p.green,
@@ -332,18 +332,18 @@ function buildTheme(name, p) {
 
       // ── Inline Chat ───────────────────────────────────────
       'inlineChat.background': p.bg,
-      'inlineChat.border': p.bgDeep,
+      'inlineChat.border': p.borderSubtle,
       'inlineChat.shadow': p.bgDeepest,
       'inlineChatDiff.inserted': alpha(p.green, '19'),
       'inlineChatDiff.removed': alpha(p.green, '19'),
 
       // ── Input ─────────────────────────────────────────────
       'input.background': p.bgElevated,
-      'input.border': p.bgOverlay,
+      'input.border': p.borderControl,
       'input.foreground': p.fg,
       'input.placeholderForeground': p.fgDim,
       'inputOption.activeBackground': p.bgOverlay,
-      'inputOption.activeBorder': p.bgOverlay,
+      'inputOption.activeBorder': p.borderControl,
       'inputOption.activeForeground': p.fg,
       'inputOption.hoverBackground': p.bgOverlay,
       'inputValidation.errorBackground': p.bgElevated,
@@ -358,12 +358,12 @@ function buildTheme(name, p) {
 
       // ── Interactive ───────────────────────────────────────
       'interactive.activeCodeBorder': p.fgDim,
-      'interactive.inactiveCodeBorder': p.bgElevated,
+      'interactive.inactiveCodeBorder': p.borderSubtle,
 
       // ── Keybinding Label ──────────────────────────────────
       'keybindingLabel.background': p.bgOverlay,
-      'keybindingLabel.border': p.bgOverlay,
-      'keybindingLabel.bottomBorder': p.bgOverlay,
+      'keybindingLabel.border': p.borderControl,
+      'keybindingLabel.bottomBorder': p.borderControl,
       'keybindingLabel.foreground': p.fgSoft,
 
       // ── List / Tree ───────────────────────────────────────
@@ -388,14 +388,14 @@ function buildTheme(name, p) {
 
       // ── Menu ──────────────────────────────────────────────
       'menu.background': p.bg,
-      'menu.border': p.bgDeep,
+      'menu.border': p.borderSubtle,
       'menu.foreground': p.fg,
       'menu.selectionForeground': p.yellow,
       'menu.separatorBackground': p.bgElevated,
       'menubar.selectionForeground': p.fg,
 
       // ── Merge ─────────────────────────────────────────────
-      'merge.border': p.bg,
+      'merge.border': p.borderSubtle,
       'merge.commonContentBackground': alpha(p.fg, '19'),
       'merge.commonHeaderBackground': alpha(p.fg, '26'),
       'merge.currentContentBackground': alpha(p.red, '19'),
@@ -425,7 +425,7 @@ function buildTheme(name, p) {
       'minimapGutter.modifiedBackground': p.yellow,
 
       // ── Notebook ──────────────────────────────────────────
-      'notebook.cellBorderColor': p.bgElevated,
+      'notebook.cellBorderColor': p.borderSubtle,
       'notebook.cellEditorBackground': alpha(p.bgDeep, '7f'),
       'notebook.cellInsertionIndicator': p.fg,
       'notebook.cellStatusBarItemHoverBackground': p.fgDim,
@@ -437,31 +437,31 @@ function buildTheme(name, p) {
       'notebookStatusSuccessIcon.foreground': p.green,
 
       // ── Notifications ─────────────────────────────────────
-      'notificationCenter.border': p.bgDeep,
+      'notificationCenter.border': p.borderSubtle,
       'notificationCenterHeader.background': p.bgElevated,
       'notificationCenterHeader.foreground': p.fgMuted,
       'notificationLink.foreground': p.yellow,
       'notifications.background': p.bgElevated,
-      'notifications.border': p.bgDeep,
+      'notifications.border': p.borderSubtle,
       'notifications.foreground': p.fgSoft,
       'notificationsErrorIcon.foreground': p.red,
       'notificationsInfoIcon.foreground': p.cyan,
       'notificationsWarningIcon.foreground': p.orange,
-      'notificationToast.border': p.bgDeep,
+      'notificationToast.border': p.borderSubtle,
 
       // ── Panel ─────────────────────────────────────────────
       'panel.background': p.bgElevated,
-      'panel.border': p.bgDeepest,
+      'panel.border': p.border,
       'panel.dropBackground': alpha(p.bgDeep, 'bf'),
       'panelStickyScroll.background': p.bgElevated,
-      'panelStickyScroll.border': p.bgOverlay,
+      'panelStickyScroll.border': p.borderControl,
       'panelStickyScroll.shadow': p.bgElevated,
       'panelTitle.activeBorder': p.yellow,
       'panelTitle.activeForeground': p.yellow,
       'panelTitle.inactiveForeground': p.fgMuted,
 
       // ── Peek View ─────────────────────────────────────────
-      'peekView.border': p.bgDeep,
+      'peekView.border': p.borderSubtle,
       'peekViewEditor.background': p.bgElevated,
       'peekViewEditor.matchHighlightBackground': p.bgOverlay,
       'peekViewEditorGutter.background': p.bgElevated,
@@ -476,7 +476,7 @@ function buildTheme(name, p) {
       'peekViewTitleLabel.foreground': p.fg,
 
       // ── Picker Group ──────────────────────────────────────
-      'pickerGroup.border': p.bg,
+      'pickerGroup.border': p.borderSubtle,
       'pickerGroup.foreground': p.fgFaint,
 
       // ── Ports ─────────────────────────────────────────────
@@ -527,48 +527,48 @@ function buildTheme(name, p) {
 
       // ── Settings ──────────────────────────────────────────
       'settings.checkboxBackground': p.bgElevated,
-      'settings.checkboxBorder': p.bgOverlay,
+      'settings.checkboxBorder': p.borderControl,
       'settings.checkboxForeground': p.yellow,
       'settings.dropdownBackground': p.bgElevated,
-      'settings.dropdownBorder': p.bgOverlay,
+      'settings.dropdownBorder': p.borderControl,
       'settings.dropdownForeground': p.fg,
       'settings.dropdownListBorder': p.fgMuted,
       'settings.headerForeground': p.yellow,
       'settings.modifiedItemForeground': p.yellow,
       'settings.modifiedItemIndicator': p.yellow,
       'settings.numberInputBackground': p.bgElevated,
-      'settings.numberInputBorder': p.bgOverlay,
+      'settings.numberInputBorder': p.borderControl,
       'settings.numberInputForeground': p.fg,
       'settings.rowHoverBackground': alpha(p.fgDim, '0c'),
-      'settings.sashBorder': p.bgElevated,
+      'settings.sashBorder': p.borderSubtle,
       'settings.settingsHeaderHoverForeground': p.fg,
       'settings.textInputBackground': p.bgElevated,
-      'settings.textInputBorder': p.bgOverlay,
+      'settings.textInputBorder': p.borderControl,
       'settings.textInputForeground': p.fg,
 
       // ── Sidebar ───────────────────────────────────────────
       'sideBar.background': p.bgDeep,
-      'sideBar.border': p.bgDeepest,
+      'sideBar.border': p.border,
       'sideBar.dropBackground': alpha(p.bgDeep, 'bf'),
       'sideBar.foreground': p.fgMuted,
       'sideBarSectionHeader.background': p.bgDeep,
       'sideBarSectionHeader.foreground': p.fgDim,
       'sideBarStickyScroll.background': p.bgDeep,
-      'sideBarStickyScroll.border': p.bgElevated,
+      'sideBarStickyScroll.border': p.borderSubtle,
       'sideBarStickyScroll.shadow': p.bgDeep,
       'sideBarTitle.foreground': p.fgFaint,
       'simpleFindWidget.sashBorder': '',
 
       // ── Status Bar ────────────────────────────────────────
-      'statusBar.background': p.bgDeep,
-      'statusBar.border': p.bgDeepest,
+      'statusBar.background': p.bgOverlay,
+      'statusBar.border': p.border,
       'statusBar.debuggingBackground': p.fgDim,
-      'statusBar.debuggingBorder': p.bgDeep,
+      'statusBar.debuggingBorder': p.borderSubtle,
       'statusBar.debuggingForeground': p.fg,
-      'statusBar.focusBorder': p.bgElevated,
+      'statusBar.focusBorder': p.borderSubtle,
       'statusBar.foreground': p.fgDim,
       'statusBar.noFolderBackground': p.bgDeep,
-      'statusBar.noFolderBorder': p.bgDeepest,
+      'statusBar.noFolderBorder': p.border,
       'statusBar.noFolderForeground': p.fgDim,
       'statusBarItem.activeBackground': p.bg,
       'statusBarItem.errorBackground': p.bg,
@@ -626,23 +626,23 @@ function buildTheme(name, p) {
       'tab.activeBackground': p.bg,
       'tab.activeBorder': p.yellow,
       'tab.activeForeground': p.yellow,
-      'tab.activeModifiedBorder': p.bgOverlay,
-      'tab.border': p.bg,
+      'tab.activeModifiedBorder': p.borderControl,
+      'tab.border': p.borderSubtle,
       'tab.hoverBackground': p.bg,
-      'tab.hoverBorder': p.bgOverlay,
+      'tab.hoverBorder': p.borderControl,
       'tab.hoverForeground': p.fg,
       'tab.inactiveBackground': p.bg,
       'tab.inactiveForeground': p.fgMuted,
-      'tab.inactiveModifiedBorder': p.bgOverlay,
-      'tab.lastPinnedBorder': p.bgOverlay,
+      'tab.inactiveModifiedBorder': p.borderControl,
+      'tab.lastPinnedBorder': p.borderControl,
       'tab.unfocusedActiveBorder': p.fgMuted,
       'tab.unfocusedActiveForeground': p.fgSoft,
-      'tab.unfocusedActiveModifiedBorder': p.bgElevated,
+      'tab.unfocusedActiveModifiedBorder': p.borderSubtle,
       'tab.unfocusedHoverBackground': p.bg,
-      'tab.unfocusedHoverBorder': p.bg,
+      'tab.unfocusedHoverBorder': p.borderSubtle,
       'tab.unfocusedHoverForeground': p.fgSoft,
       'tab.unfocusedInactiveForeground': p.fgMuted,
-      'tab.unfocusedInactiveModifiedBorder': p.bgElevated,
+      'tab.unfocusedInactiveModifiedBorder': p.borderSubtle,
 
       // ── Terminal ──────────────────────────────────────────
       'terminal.ansiBlack': p.bgElevated,
@@ -685,7 +685,7 @@ function buildTheme(name, p) {
 
       // ── Text ──────────────────────────────────────────────
       'textBlockQuote.background': p.bgElevated,
-      'textBlockQuote.border': p.bgElevated,
+      'textBlockQuote.border': p.borderSubtle,
       'textCodeBlock.background': p.bgElevated,
       'textLink.activeForeground': p.fg,
       'textLink.foreground': p.yellow,
@@ -695,7 +695,7 @@ function buildTheme(name, p) {
       // ── Title Bar ─────────────────────────────────────────
       'titleBar.activeBackground': p.bgDeep,
       'titleBar.activeForeground': p.fgMuted,
-      'titleBar.border': p.bgDeepest,
+      'titleBar.border': p.border,
       'titleBar.inactiveBackground': p.bgDeep,
       'titleBar.inactiveForeground': p.fgFaint,
 

@@ -13,6 +13,11 @@ const palettes = {
     bgElevated: '#0a1624',  // panels, inputs
     bgOverlay:  '#1a3850',  // borders, overlays
 
+    // Borders (subtle to strong)
+    border:        '#000000',  // structural: sidebar, panel, status, title
+    borderSubtle:  '#5898b8',  // containers: widgets, menus, notifications
+    borderControl: '#a4d8f0',  // controls: inputs, dropdowns, checkboxes
+
     // Foregrounds (dimmest to brightest)
     fgFaint:    '#283848',  // ghost text, ignored items
     fgDim:      '#386888',  // comments, dim borders
@@ -42,6 +47,11 @@ const palettes = {
     bgElevated: '#24180a',  // panels, inputs
     bgOverlay:  '#503a1a',  // borders, overlays
 
+    // Borders (subtle to strong)
+    border:        '#000000',  // structural: sidebar, panel, status, title
+    borderSubtle:  '#090602',  // containers: widgets, menus, notifications
+    borderControl: '#503a1a',  // controls: inputs, dropdowns, checkboxes
+
     // Foregrounds (dimmest to brightest)
     fgFaint:    '#484028',  // ghost text, ignored items
     fgDim:      '#886018',  // comments, dim borders
@@ -70,6 +80,11 @@ const palettes = {
     bg:         '#061a0c',  // sidebar, title bar
     bgElevated: '#0a2414',  // panels, inputs
     bgOverlay:  '#1a5030',  // borders, overlays
+
+    // Borders (subtle to strong)
+    border:        '#000000',  // structural: sidebar, panel, status, title
+    borderSubtle:  '#020904',  // containers: widgets, menus, notifications
+    borderControl: '#1a5030',  // controls: inputs, dropdowns, checkboxes
 
     // Foregrounds (dimmest to brightest)
     fgFaint:    '#284838',  // ghost text, ignored items
