@@ -21,7 +21,7 @@ function buildTheme(name, p) {
       'descriptionForeground': p.primaryMid,
       'disabledForeground': alpha(p.primaryBright, '26'),
       'errorForeground': p.red,
-      'focusBorder': p.red,
+      'focusBorder': p.primaryDim,
       'foreground': p.primaryBright,
       'icon.foreground': p.secondary,
       'sash.hoverBorder': p.primaryDim,
@@ -529,8 +529,8 @@ function buildTheme(name, p) {
       'diffEditor.insertedLineBackground': alpha(p.secondary, '19'),
       'diffEditor.insertedTextBackground': alpha(p.secondary, '19'),
       'diffEditor.insertedTextBorder': p.none,
-      'diffEditor.move.border': '',
-      'diffEditor.moveActive.border': '',
+      'diffEditor.move.border': p.primaryDim,
+      'diffEditor.moveActive.border': p.primaryMid,
       'diffEditor.removedLineBackground': alpha(p.red, '19'),
       'diffEditor.removedTextBackground': alpha(p.red, '19'),
       'diffEditor.removedTextBorder': p.none,
@@ -662,8 +662,8 @@ function buildTheme(name, p) {
       'statusBarItem.focusBorder': p.primaryDim,
       'statusBarItem.hoverBackground': p.bg,
       'statusBarItem.hoverForeground': p.primaryBright,
-      'statusBarItem.offlineBackground': '',
-      'statusBarItem.offlineForeground': '',
+      'statusBarItem.offlineBackground': p.bgLighter,
+      'statusBarItem.offlineForeground': p.primaryDim,
       'statusBarItem.offlineHoverBackground': p.bgLighter,
       'statusBarItem.offlineHoverForeground': p.primaryDim,
       'statusBarItem.prominentBackground': p.bgLighter,
@@ -729,10 +729,10 @@ function buildTheme(name, p) {
 
       // ── Extensions ──────────────────────────────────────────
       'extensionBadge.remoteBackground': p.secondary,
-      'extensionBadge.remoteForeground': p.primaryBright,
+      'extensionBadge.remoteForeground': p.bgLight,
       'extensionButton.background': p.bgLighter,
       'extensionButton.border': p.none,
-      'extensionButton.foreground': p.primary,
+      'extensionButton.foreground': p.primaryBright,
       'extensionButton.hoverBackground': p.primaryFaint,
       'extensionButton.prominentBackground': p.bgLighter,
       'extensionButton.prominentForeground': p.primaryBright,
@@ -974,7 +974,7 @@ function buildTheme(name, p) {
       'settings.checkboxForeground': p.secondaryBright,
       'settings.dropdownBackground': p.bgLighter,
       'settings.dropdownBorder': p.borderBright,
-      'settings.dropdownForeground': p.primaryBright,
+      'settings.dropdownForeground': p.primaryMid,
       'settings.dropdownListBorder': p.primaryMid,
       'settings.focusedRowBackground': alpha(p.primaryBright, '0c'),
       'settings.focusedRowBorder': p.primaryDim,
@@ -1039,7 +1039,7 @@ function buildTheme(name, p) {
       'symbolIcon.variableForeground': p.primaryMid,
 
       // ── Simple Find Widget ──────────────────────────────────
-      'simpleFindWidget.sashBorder': '',
+      'simpleFindWidget.sashBorder': p.border,
     },
 
     tokenColors: [

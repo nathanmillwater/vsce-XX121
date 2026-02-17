@@ -7,10 +7,9 @@ const palettes = {
   // Default — cool blue phosphor with amber accents
   blue: {
     // Backgrounds — pitch black with faint CRT tint
-    bg:        '#020609',
+    bg:        '#040c14',
     bgLight:   '#06101a',
     bgLighter: '#0a1624',
-    bgPanel:   '#040c14',
 
     // Primary CRT phosphor (blue)
     primary:       '#7ab8d8',
@@ -25,17 +24,14 @@ const palettes = {
     secondary:       '#d4a030',
     secondaryBright: '#e8bd60',
     secondaryDim:    '#a06d20',
-    secondaryGhost:  '#6b5530',
 
     // Alert (red)
     red:       '#d04444',
     redBright: '#e06666',
-    redDim:    '#882222',
 
     // Utility
     black:        '#000000',
-    white:        '#f8f7d8',
-    border:       '#000000',
+    border:       '#0a1828',
     borderBright: '#504b1e',
     none:         '#00000000',
   },
@@ -46,7 +42,6 @@ const palettes = {
     bg:        '#090602',
     bgLight:   '#1a1006',
     bgLighter: '#24180a',
-    bgPanel:   '#0c0804',
 
     // Primary CRT phosphor (amber)
     primary:       '#d4a030',
@@ -61,16 +56,13 @@ const palettes = {
     secondary:       '#7ab8d8',
     secondaryBright: '#a4d8f0',
     secondaryDim:    '#5898b8',
-    secondaryGhost:  '#386888',
 
     // Alert (red)
     red:       '#d04444',
     redBright: '#e06666',
-    redDim:    '#882222',
 
     // Utility
     black:        '#000000',
-    white:        '#f8f7d8',
     border:       '#383412',
     borderBright: '#504b1e',
     none:         '#00000000',
@@ -82,7 +74,6 @@ const palettes = {
     bg:        '#020904',
     bgLight:   '#061a0c',
     bgLighter: '#0a2414',
-    bgPanel:   '#040c08',
 
     // Primary CRT phosphor (green)
     primary:       '#78d898',
@@ -97,16 +88,13 @@ const palettes = {
     secondary:       '#d4a030',
     secondaryBright: '#e8bd60',
     secondaryDim:    '#a06d20',
-    secondaryGhost:  '#6b5530',
 
     // Alert (red)
     red:       '#d04444',
     redBright: '#e06666',
-    redDim:    '#882222',
 
     // Utility
     black:        '#000000',
-    white:        '#f8f7d8',
     border:       '#383412',
     borderBright: '#504b1e',
     none:         '#00000000',
