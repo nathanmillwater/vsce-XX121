@@ -8,20 +8,20 @@ function buildTheme(name, p) {
 
   return {
     name,
-    type: 'hc-dark',
+    type: 'dark',
     author: 'nathanmillwater',
     colorSpaceName: 'sRGB',
 
     colors: {
       // ── Contrast Colors ─────────────────────────────────────
-      'contrastActiveBorder': p.none,
-      'contrastBorder': p.none,
+      'contrastActiveBorder': p.primaryBright,
+      'contrastBorder': p.primaryDim,
 
       // ── Base Colors ─────────────────────────────────────────
       'descriptionForeground': p.primaryMid,
       'disabledForeground': alpha(p.primaryBright, '26'),
       'errorForeground': p.red,
-      'focusBorder': p.primaryDim,
+      'focusBorder': p.red,
       'foreground': p.primaryBright,
       'icon.foreground': p.secondary,
       'sash.hoverBorder': p.primaryDim,
@@ -680,8 +680,8 @@ function buildTheme(name, p) {
       'statusBarItem.warningHoverForeground': p.secondary,
 
       // ── Title Bar ───────────────────────────────────────────
-      'titleBar.activeBackground': p.bg,
-      'titleBar.activeForeground': p.primaryMid,
+      'titleBar.activeBackground': p.primaryDim,
+      'titleBar.activeForeground': p.primaryWhite,
       'titleBar.border': p.border,
       'titleBar.inactiveBackground': p.bg,
       'titleBar.inactiveForeground': p.primaryGhost,

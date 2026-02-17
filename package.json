@@ -22,8 +22,7 @@
     "crt",
     "retro",
     "terminal",
-    "color-theme",
-    "high-contrast"
+    "color-theme"
   ],
   "scripts": {
     "build": "node build-theme.js",
@@ -46,17 +45,17 @@
     "themes": [
       {
         "label": "XX121",
-        "uiTheme": "hc-black",
+        "uiTheme": "vs-dark",
         "path": "./themes/XX121-color-theme.json"
       },
       {
         "label": "XX121 Yellow",
-        "uiTheme": "hc-black",
+        "uiTheme": "vs-dark",
         "path": "./themes/XX121-yellow-color-theme.json"
       },
       {
         "label": "XX121 Green",
-        "uiTheme": "hc-black",
+        "uiTheme": "vs-dark",
         "path": "./themes/XX121-green-color-theme.json"
       }
     ]
