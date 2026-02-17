@@ -6,104 +6,110 @@
 const palettes = {
   // Default — cool blue phosphor with amber accents
   blue: {
-    // Backgrounds (darkest to lightest)
-    bgDeepest:  '#000000',  // absolute black
-    bgDeep:     '#020609',  // main editor bg
-    bg:         '#06101a',  // sidebar, title bar
-    bgElevated: '#0a1624',  // panels, inputs
-    bgOverlay:  '#1a3850',  // borders, overlays
+    // Backgrounds — pitch black with faint CRT tint
+    bg:        '#020609',
+    bgLight:   '#06101a',
+    bgLighter: '#0a1624',
+    bgPanel:   '#040c14',
 
-    // Borders (subtle to strong)
-    border:        '#000000',  // structural: sidebar, panel, status, title
-    borderSubtle:  '#5898b8',  // containers: widgets, menus, notifications
-    borderControl: '#a4d8f0',  // controls: inputs, dropdowns, checkboxes
+    // Primary CRT phosphor (blue)
+    primary:       '#7ab8d8',
+    primaryBright: '#a4d8f0',
+    primaryWhite:  '#c8e8f8',
+    primaryMid:    '#5898b8',
+    primaryDim:    '#386888',
+    primaryFaint:  '#1a3850',
+    primaryGhost:  '#283848',
 
-    // Foregrounds (dimmest to brightest)
-    fgFaint:    '#283848',  // ghost text, ignored items
-    fgDim:      '#386888',  // comments, dim borders
-    fgMuted:    '#5898b8',  // descriptions, inactive
-    fgSoft:     '#7ab8d8',  // secondary foreground
-    fg:         '#a4d8f0',  // primary foreground
+    // Secondary phosphor (amber)
+    secondary:       '#d4a030',
+    secondaryBright: '#e8bd60',
+    secondaryDim:    '#a06d20',
+    secondaryGhost:  '#6b5530',
 
-    // Accent colors
-    red:        '#d04444',  // keywords, errors, tags
-    orange:     '#e8bd60',  // warnings, parameters
-    yellow:     '#d4a030',  // strings, accent, active
-    green:      '#58b878',  // functions, added, success
-    cyan:       '#50b8b8',  // types, info, classes
-    purple:     '#b070a0',  // constants, numbers
+    // Alert (red)
+    red:       '#d04444',
+    redBright: '#e06666',
+    redDim:    '#882222',
 
     // Utility
-    transparent: '#00000000',
-    white:       '#f8f7d8',
+    black:        '#000000',
+    white:        '#f8f7d8',
+    border:       '#383412',
+    borderBright: '#504b1e',
+    none:         '#00000000',
   },
 
   // Yellow — warm amber phosphor with blue accents
   yellow: {
-    // Backgrounds (darkest to lightest)
-    bgDeepest:  '#000000',  // absolute black
-    bgDeep:     '#090602',  // main editor bg
-    bg:         '#1a1006',  // sidebar, title bar
-    bgElevated: '#24180a',  // panels, inputs
-    bgOverlay:  '#503a1a',  // borders, overlays
+    // Backgrounds — pitch black with faint CRT tint
+    bg:        '#090602',
+    bgLight:   '#1a1006',
+    bgLighter: '#24180a',
+    bgPanel:   '#0c0804',
 
-    // Borders (subtle to strong)
-    border:        '#000000',  // structural: sidebar, panel, status, title
-    borderSubtle:  '#090602',  // containers: widgets, menus, notifications
-    borderControl: '#503a1a',  // controls: inputs, dropdowns, checkboxes
+    // Primary CRT phosphor (amber)
+    primary:       '#d4a030',
+    primaryBright: '#e8bd60',
+    primaryWhite:  '#f8e0a0',
+    primaryMid:    '#b88520',
+    primaryDim:    '#886018',
+    primaryFaint:  '#503a1a',
+    primaryGhost:  '#484028',
 
-    // Foregrounds (dimmest to brightest)
-    fgFaint:    '#484028',  // ghost text, ignored items
-    fgDim:      '#886018',  // comments, dim borders
-    fgMuted:    '#b88520',  // descriptions, inactive
-    fgSoft:     '#d4a030',  // secondary foreground
-    fg:         '#e8bd60',  // primary foreground
+    // Secondary phosphor (blue)
+    secondary:       '#7ab8d8',
+    secondaryBright: '#a4d8f0',
+    secondaryDim:    '#5898b8',
+    secondaryGhost:  '#386888',
 
-    // Accent colors
-    red:        '#d04444',  // keywords, errors, tags
-    orange:     '#a4d8f0',  // warnings, parameters
-    yellow:     '#7ab8d8',  // strings, accent, active
-    green:      '#68b858',  // functions, added, success
-    cyan:       '#58b8a8',  // types, info, classes
-    purple:     '#b87098',  // constants, numbers
+    // Alert (red)
+    red:       '#d04444',
+    redBright: '#e06666',
+    redDim:    '#882222',
 
     // Utility
-    transparent: '#00000000',
-    white:       '#f8f7d8',
+    black:        '#000000',
+    white:        '#f8f7d8',
+    border:       '#383412',
+    borderBright: '#504b1e',
+    none:         '#00000000',
   },
 
   // Green — classic terminal phosphor
   green: {
-    // Backgrounds (darkest to lightest)
-    bgDeepest:  '#000000',  // absolute black
-    bgDeep:     '#020904',  // main editor bg
-    bg:         '#061a0c',  // sidebar, title bar
-    bgElevated: '#0a2414',  // panels, inputs
-    bgOverlay:  '#1a5030',  // borders, overlays
+    // Backgrounds — pitch black with faint CRT tint
+    bg:        '#020904',
+    bgLight:   '#061a0c',
+    bgLighter: '#0a2414',
+    bgPanel:   '#040c08',
 
-    // Borders (subtle to strong)
-    border:        '#000000',  // structural: sidebar, panel, status, title
-    borderSubtle:  '#020904',  // containers: widgets, menus, notifications
-    borderControl: '#1a5030',  // controls: inputs, dropdowns, checkboxes
+    // Primary CRT phosphor (green)
+    primary:       '#78d898',
+    primaryBright: '#a4f0c0',
+    primaryWhite:  '#c8f8d8',
+    primaryMid:    '#58b878',
+    primaryDim:    '#388858',
+    primaryFaint:  '#1a5030',
+    primaryGhost:  '#284838',
 
-    // Foregrounds (dimmest to brightest)
-    fgFaint:    '#284838',  // ghost text, ignored items
-    fgDim:      '#388858',  // comments, dim borders
-    fgMuted:    '#58b878',  // descriptions, inactive
-    fgSoft:     '#78d898',  // secondary foreground
-    fg:         '#a4f0c0',  // primary foreground
+    // Secondary phosphor (amber)
+    secondary:       '#d4a030',
+    secondaryBright: '#e8bd60',
+    secondaryDim:    '#a06d20',
+    secondaryGhost:  '#6b5530',
 
-    // Accent colors
-    red:        '#d04444',  // keywords, errors, tags
-    orange:     '#e8bd60',  // warnings, parameters
-    yellow:     '#d4a030',  // strings, accent, active
-    green:      '#58b878',  // functions, added, success
-    cyan:       '#50b8b8',  // types, info, classes
-    purple:     '#b070a0',  // constants, numbers
+    // Alert (red)
+    red:       '#d04444',
+    redBright: '#e06666',
+    redDim:    '#882222',
 
     // Utility
-    transparent: '#00000000',
-    white:       '#f8f7d8',
+    black:        '#000000',
+    white:        '#f8f7d8',
+    border:       '#383412',
+    borderBright: '#504b1e',
+    none:         '#00000000',
   },
 };
 
